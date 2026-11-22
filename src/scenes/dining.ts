@@ -17,6 +17,7 @@ import type { CafeState, Guest, Party, Target } from '../game/types';
 import { foodIcon, icon } from '../ui/icons';
 
 const GUEST_HEAD_Y = 2.2;
+const TUT_ARROW = '<svg viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg"><path d="M18 4h24v38h14L30 76 4 42h14z" fill="#FFC233" stroke="#2B2340" stroke-width="5" stroke-linejoin="round"/></svg>';
 
 /**
  * Adegan ruang makan (layar Pelayan). Membaca CafeState (lokal atau dari jaringan)
@@ -40,6 +41,8 @@ export class DiningView extends View3D {
   private time = 0;
   private lastDir = 0;
   showGuide = true;
+  /** Panah besar memantul di atas tujuan (tutorial). */
+  tutorialArrow = false;
   /** Target panduan (dari suggestWaiterTarget). */
   guideTarget: Target | null = null;
   private noopFx = new Map<string, number>();
@@ -279,6 +282,8 @@ export class DiningView extends View3D {
 
   private partyBubble(p: Party, s: CafeState) {
     if (p.state === 'arriving' || p.state === 'toTable' || p.state === 'reading') return;
+    // hanya rombongan terdepan di antrean yang menampilkan gelembung kursi (supaya tidak bertumpuk)
+    if (p.state === 'waitSeat' && s.parties.some((q) => (q.state === 'waitSeat' || q.state === 'withWaiter') && q.queueIdx < p.queueIdx)) return;
     const g0 = p.guests[0];
     const m = moveAt(g0.move, s.t);
     const seated = p.table >= 0 && p.state !== 'leaving';
@@ -308,6 +313,10 @@ export class DiningView extends View3D {
     if (!tg) { this.dots.count = 0; this.targetRing.visible = false; return; }
     const pt = this.targetPoint(s, tg);
     if (!pt) { this.dots.count = 0; this.targetRing.visible = false; return; }
+    if (this.tutorialArrow) {
+      const [ax, ay] = this.project(pt.x, pt.y + (tg.k === 'table' ? 2.0 : tg.k === 'party' ? 2.1 : 1.6), pt.z);
+      this.bubbles.put('tutArrow', ax, ay, TUT_ARROW, 'tut-arrow');
+    }
     // cincin tujuan
     this.targetRing.visible = true;
     const pulse = 1 + Math.sin(this.time * 5) * 0.05;

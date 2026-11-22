@@ -105,6 +105,8 @@ export interface CafeState {
   waiter: WaiterS;
   stats: Stats;
   nextArrival: number;
+  /** Tutorial aktif (Level 1 pertama kali): satu tamu, tanpa kehilangan kesabaran, timer berhenti. */
+  tutorial: boolean;
   seq: number;
   rng: number;
 }
@@ -131,4 +133,5 @@ export type SimEvent =
   | { e: 'washed' }
   | { e: 'noop'; target: Target }
   | { e: 'walk'; target: Target }
+  | { e: 'tutorialDone' }
   | { e: 'end' };

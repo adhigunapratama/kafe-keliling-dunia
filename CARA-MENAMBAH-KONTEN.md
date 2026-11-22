@@ -42,8 +42,14 @@ Stasiun dapur yang muncul di level dihitung otomatis dari resep menu level itu.
 | `seret-bahan` | seret bahan ke piring sesuai urutan | `base`, `items` (urut), `distractors` |
 | `timing` | ketuk saat jarum di zona hijau | `ingredient`, `action` (`goreng`/`panggang`/`rebus`), `seconds`, `zone` |
 | `balik` | ketuk "Balik!" saat warnanya pas | `ingredient`, `flips`, `seconds` |
+| `aduk` | putar jari melingkar di mangkuk | `ingredient`, `turns` |
+| `gulung` | swipe panjang dari bawah ke atas | `ingredient`, `rolls` |
+| `lipat` | seret separuh atas ke bawah | `ingredient`, `folds` |
+| `tarik` | swipe lebar ke kiri-kanan | `ingredient`, `pulls` |
 
-*(Tahap 3 menambah: `aduk`, `gulung`, `lipat`, `tarik`.)*
+`seret-bahan` punya `layout`: `'stack'` (ditumpuk, mis. burger) atau `'scatter'`
+(ditabur di titik yang diseret, mis. pizza, mangkuk ramen). Bahan boleh punya
+`topIcon` (mis. saus tomat tampil sebagai cipratan saat ditabur).
 
 ### Menambah jenis mini-game baru
 
@@ -59,7 +65,9 @@ Stasiun dapur yang muncul di level dihitung otomatis dari resep menu level itu.
 
 1. **Negara** di `src/data/countries.ts` → `COUNTRIES`:
    warna bendera (`colors`), tema dapur & ruang makan (warna dinding, lantai),
-   hiasan (`decorKitchen`, `decorDining`: untaian bendera, poster, tanaman, lampu),
+   hiasan (`decorKitchen`, `decorDining`: `bunting` untaian bendera, `poster`
+   (bentuk star/circle/stripes/sun/tower/wave), `plant`, `cactus`, `bamboo`, `lantern`,
+   `flowerbox`, `lamp`). Tanaman, kaktus, dan bambu otomatis menjadi penghalang jalan.
    dan gaya musik (tangga nada, tempo).
 2. **Bendera** di `src/data/flags.ts` (SVG sederhana 30×20).
 3. **Level** di `src/data/levels.ts` → `LEVELS`. Semua angka kesulitan ada di sini:
@@ -82,3 +90,9 @@ dan `en.ts` (TypeScript dan tes akan menolak bila ada yang kurang).
 ## Dekorasi (Hias Kafe)
 
 *Menyusul di Tahap 5* (`src/data/decor.ts`).
+
+## Tutorial
+
+Langkah tutorial dihitung dari status kafe di `src/game/tutorial.ts` (satu fungsi untuk
+kedua layar). Level dengan `tutorial: true` menjalankannya saat pertama kali dimainkan.
+Kalimat suara ada di i18n (`voice.*`), teks kartu Koki di `tut.*`.

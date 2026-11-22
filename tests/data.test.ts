@@ -67,6 +67,15 @@ describe('data konten', () => {
     }
   });
 
+  it('setiap bahan punya ikon (dan ikon tabur bila ada)', () => {
+    for (const ing of Object.values(INGREDIENTS)) {
+      expect(FOOD_ICONS[ing.icon], ing.id).toBeDefined();
+      if (ing.topIcon) expect(FOOD_ICONS[ing.topIcon], ing.topIcon).toBeDefined();
+    }
+  });
+
+  it('level 1–5 bisa dimainkan', () => { for (let i = 1; i <= 5; i++) expect(isLevelPlayable(i), `level ${i}`).toBe(true); });
+
   it('teks EN lengkap (kunci sama dengan ID) dan tidak kosong', () => {
     expect(Object.keys(en).sort()).toEqual(Object.keys(id).sort());
     for (const [k, v] of Object.entries(en)) expect(v.length, k).toBeGreaterThan(0);
