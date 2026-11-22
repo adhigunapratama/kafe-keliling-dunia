@@ -15,6 +15,7 @@ import { ChefScreen } from './ChefScreen';
 import { WaiterScreen } from './WaiterScreen';
 import { ResultScreen } from './ResultScreen';
 import { SettingsModal } from './SettingsModal';
+import { SoloShop } from './SoloShop';
 
 type ViewMode = 'both' | 'chef' | 'waiter';
 
@@ -25,13 +26,14 @@ type ViewMode = 'both' | 'chef' | 'waiter';
 export function TestModeScreen({ level, onExit, onLevel }: { level: number; onExit: () => void; onLevel: (id: number) => void }) {
   const st = useStore(settings);
   const [round, setRound] = useState(0);
-  const session = useMemo(() => new HostSession(level, st.relaxed), [level, round]);
+  const session = useMemo(() => new HostSession(level, st.relaxed, undefined, !!getLevel(level).tutorial && !loadProgress().best[level], loadProgress().decor.placed), [level, round]);
   const link = useMemo(() => session.localWaiterLink(), [session]);
   const [mode, setMode] = useState<ViewMode>(() => (window.innerWidth >= 1000 ? 'both' : 'chef'));
   const [paused, setPaused] = useState(false);
   const [closing, setClosing] = useState(false);
   const [ended, setEnded] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [shop, setShop] = useState(false);
   const L = getLevel(level);
 
   useEffect(() => {
@@ -60,7 +62,7 @@ export function TestModeScreen({ level, onExit, onLevel }: { level: number; onEx
         <ChefScreen key={'c' + round} session={session} visible={mode !== 'waiter' && !ended} onPause={() => pause(true)} />
       </div>
       <div class="pane pane-waiter" style={{ display: mode === 'chef' ? 'none' : undefined }}>
-        <WaiterScreen key={'w' + round} link={link} level={level} visible={mode !== 'chef' && !ended} onPause={() => pause(true)} />
+        <WaiterScreen key={'w' + round} link={link} level={level} decor={session.decorPlaced} visible={mode !== 'chef' && !ended} onPause={() => pause(true)} />
       </div>
       <div class="mode-switch">
         <Segmented<ViewMode> value={mode} onChange={setMode} options={[{ v: 'chef', label: t('test.chef') }, { v: 'both', label: t('test.both') }, { v: 'waiter', label: t('test.waiter') }]} />
@@ -79,8 +81,9 @@ export function TestModeScreen({ level, onExit, onLevel }: { level: number; onEx
       )}
       {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
       {ended && (
-        <ResultScreen state={session.sim.state} onNext={onLevel} onReplay={() => setRound((r) => r + 1)} onHome={onExit} />
+        <ResultScreen state={session.sim.state} onNext={onLevel} onReplay={() => setRound((r) => r + 1)} onHome={onExit} onDecorate={() => setShop(true)} />
       )}
+      {shop && <SoloShop onClose={() => setShop(false)} />}
     </div>
   );
 }

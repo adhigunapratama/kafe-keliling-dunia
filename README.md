@@ -10,7 +10,7 @@ Android dan Safari iOS, layar mendatar.
 
 ## Status
 
-**Tahap 2 — main berdua di dua perangkat** (lihat `CHANGELOG.md`).
+**Tahap 5 — 15 level, final Indonesia, Hias Kafe** (lihat `CHANGELOG.md`).
 Coba lewat URL preview Cloudflare Pages (lihat `DEPLOY.md`).
 
 ## Perintah
@@ -28,6 +28,15 @@ Uji di browser (memakai Chromium yang terpasang):
 npm run build && npx vite preview --port 4173
 node tools/smoke.mjs http://localhost:4173/            # main otomatis + tangkapan layar
 node tools/smoke-minigames.mjs http://localhost:4173/  # setiap mini-game dengan gerakan jari
+node tools/smoke-stage3.mjs http://localhost:4173/     # mini-game Tahap 3 + tutorial
+```
+
+Dengan server ruangan lokal menyala (lihat di bawah):
+
+```bash
+node tools/smoke-net.mjs http://localhost:4173/ http://127.0.0.1:8787     # main berdua (2 browser)
+node tools/smoke-stage4.mjs http://localhost:4173/ http://127.0.0.1:8787  # peta, simpanan, Kode Keluarga
+node tools/smoke-stage5.mjs http://localhost:4173/ http://127.0.0.1:8787  # lipat/tarik, Hias Kafe berdua, tamat
 ```
 
 `?test=1` di URL langsung membuka Mode Uji 1 Perangkat.

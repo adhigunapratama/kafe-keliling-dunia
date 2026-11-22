@@ -11,6 +11,8 @@ import { WaiterScreen } from './WaiterScreen';
 import { ResultScreen } from './ResultScreen';
 import { NetBanner, VersionModal, WaitingOverlay } from './netUi';
 import { useWakeLock } from './wakeLock';
+import { DecorShop } from './DecorShop';
+import { LookPicker } from './LookPicker';
 
 /** Alur di tablet Adik: keypad kode -> menunggu -> main -> hasil. Hampir tanpa tulisan. */
 export function GuestFlow({ onExit }: { onExit: () => void }) {
@@ -98,8 +100,21 @@ function Keypad({ onSubmit, onBack, shake, busy, versionError }: { onSubmit: (co
   );
 }
 
-function GuestRoom({ guest, onExit }: { guest: RoomGuest; onExit: () => void }) {
+function GuestRoom(props: { guest: RoomGuest; onExit: () => void }) {
+  const room = useStore(props.guest.room);
+  const g = props.guest;
+  return (
+    <>
+      <GuestRoomInner {...props} />
+      {room.shop && <DecorShop view={room.shop.view} picks={room.shop.picks} me="waiter" bought={room.shop.bought}
+        onPick={(_r, id) => g.send({ t: 'shopPick', id })} onPlace={(id) => g.send({ t: 'shopPlace', id })} />}
+    </>
+  );
+}
+
+function GuestRoomInner({ guest, onExit }: { guest: RoomGuest; onExit: () => void }) {
   const room = useStore(guest.room);
+  const [look, setLook] = useState(false);
   const net = useStore(guest.net);
   useWakeLock(room.phase === 'play');
   const hostGone = room.hostLeft || !net.peer;
@@ -107,7 +122,7 @@ function GuestRoom({ guest, onExit }: { guest: RoomGuest; onExit: () => void }) 
   if (room.phase === 'play' || room.phase === 'result') {
     return (
       <div class="screen net-play">
-        <WaiterScreen key={room.round} link={guest} level={room.level} visible={room.phase === 'play'} onPause={() => guest.send({ t: 'pause', on: true })} />
+        <WaiterScreen key={room.round} link={guest} level={room.level} decor={room.decor} visible={room.phase === 'play'} onPause={() => guest.send({ t: 'pause', on: true })} />
         <NetBanner net={net} />
         {room.phase === 'play' && hostGone && net.status === 'open' && <WaitingOverlay text={t('net.waitingKakak')} icon="chefHat" />}
         {room.phase === 'play' && room.paused && !hostGone && (
@@ -130,6 +145,7 @@ function GuestRoom({ guest, onExit }: { guest: RoomGuest; onExit: () => void }) 
         <div class="role-card role-waiter big">
           <Icon name="tray" class="role-icon" />
           <span class="role-status ok"><Icon name="check" /></span>
+          <button class="look-btn big" onClick={() => setLook(true)} aria-label={t('look.title')}><Icon name="palette" /></button>
         </div>
         <span class="dots big"><i /><i /><i /></span>
         <div class={`role-card role-chef big ${hostGone ? 'dim' : ''}`}>
@@ -138,6 +154,7 @@ function GuestRoom({ guest, onExit }: { guest: RoomGuest; onExit: () => void }) 
         </div>
       </div>
       <p class="guest-wait-text">{t('net.waitingKakak')}</p>
+      {look && <LookPicker role="waiter" showText={false} onClose={() => setLook(false)} />}
     </div>
   );
 }

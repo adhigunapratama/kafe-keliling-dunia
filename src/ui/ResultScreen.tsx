@@ -9,7 +9,7 @@ import { Btn, Flag, Icon, IconBtn, Stars } from './components';
 import { isLevelPlayable } from '../game/levelCheck';
 
 /** Hasil Level: latar kuning + konfeti, 3 bintang, statistik TIM (bukan per anak). */
-export function ResultScreen({ state, onNext, onReplay, onHome, readonly }: { state: CafeState; onNext: (id: number) => void; onReplay: () => void; onHome: () => void; readonly?: boolean }) {
+export function ResultScreen({ state, onNext, onReplay, onHome, readonly, onDecorate }: { state: CafeState; onNext: (id: number) => void; onReplay: () => void; onHome: () => void; readonly?: boolean; onDecorate?: () => void }) {
   const L = getLevel(state.level);
   const stars = starsFor(state.stats.score, L);
   const coins = coinsFor(state.stats.score, state.stats.happy, L);
@@ -21,19 +21,21 @@ export function ResultScreen({ state, onNext, onReplay, onHome, readonly }: { st
     : st.washed >= st.right && st.washed > 0 ? t('result.badgeWash', { n: st.washed }) : t('result.badgeServe', { n: st.right });
   useEffect(() => {
     audio.play('fanfare');
+    if (L.final) { setTimeout(() => audio.play('fanfare'), 1500); setTimeout(() => audio.play('happy'), 2600); }
     const ids = [0, 1, 2].slice(0, stars).map((i) => setTimeout(() => audio.play('star'), 500 + i * 380));
     return () => ids.forEach(clearTimeout);
   }, []);
-  const confetti = useMemo(() => Array.from({ length: 40 }, (_, i) => ({
+  const confetti = useMemo(() => Array.from({ length: L.final ? 90 : 40 }, (_, i) => ({
     left: (i * 37) % 100, delay: (i % 10) * 0.25, dur: 2.6 + (i % 5) * 0.4, color: ['#C9432A', '#1F6FD1', '#FFFFFF', '#2E9E5B', '#7E5BD6', '#FF7AA8'][i % 6], rot: (i * 47) % 360,
   })), []);
   const nc = next ? getCountry(next.country) : null;
   return (
-    <div class="result-screen">
+    <div class={`result-screen ${L.final ? 'final' : ''}`}>
       <div class="confetti" aria-hidden="true">
         {confetti.map((c, i) => <i key={i} style={{ left: `${c.left}%`, animationDelay: `${c.delay}s`, animationDuration: `${c.dur}s`, background: c.color, transform: `rotate(${c.rot}deg)` }} />)}
       </div>
       <div class="result-card">
+        {L.final && <div class="final-banner"><Icon name="trophy" class="trophy" /><div><b>{t('result.finalTitle')}</b><span>{t('result.finalSub')}</span></div><Icon name="trophy" class="trophy" /></div>}
         <Stars n={stars} class="result-stars" />
         <h1>{stars >= 2 ? t('result.title') : t('result.titleOk')}</h1>
         <span class="pill pill-love">{t('role.kakak')} <Icon name="heart" /> {t('role.adik')}</span>
@@ -52,7 +54,7 @@ export function ResultScreen({ state, onNext, onReplay, onHome, readonly }: { st
               <Flag code={nc.flag} /> {nextOk ? t('result.next', { country: t(`country.${nc.id}`) }) : t('result.nextSoon', { country: t(`country.${nc.id}`) })}
             </Btn>
           )}
-          <Btn color="blue" disabled title={t('title.joinSoon')}><Icon name="palette" /> {t('result.decorate')}</Btn>
+          <Btn color="blue" disabled={!onDecorate} onClick={onDecorate}><Icon name="palette" /> {t('result.decorate')}</Btn>
           <IconBtn icon="replay" label={t('result.replay')} onClick={onReplay} color="yellow" />
           <IconBtn icon="home" label={t('common.quit')} onClick={onHome} />
         </div>}

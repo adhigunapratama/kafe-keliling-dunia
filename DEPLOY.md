@@ -205,6 +205,15 @@ salah satu putus, game berhenti sebentar dengan pesan *"Menunggu Adik…"* /
 *"Menunggu Kakak…"* lalu lanjut sendiri. Kalau aplikasi tertutup atau dimuat ulang,
 buka lagi saja: perangkat otomatis masuk kembali ke ruangan yang sama (selama 2 jam).
 
+### Kode Keluarga (cadangan simpanan)
+
+Server yang sama juga menyimpan cadangan kemajuan (Durable Object kedua, `KafeBackup`).
+Tidak ada yang perlu diatur: setelah push, Worker dibangun ulang otomatis dan kelas baru
+ini ikut terpasang (lewat `migrations` di `worker/wrangler.jsonc`).
+
+- Kode Keluarga (mis. `KAFE-7Q2M-AB3C`) tampil di **Pengaturan** di HP Kakak, dengan tombol **Salin**.
+- Di HP baru: **Pengaturan → Kode Keluarga → Punya kode dari HP lama?** → ketik kode → **Pulihkan**.
+
 ---
 
 ## Mengecek pemakaian paket gratis

@@ -1,0 +1,20 @@
+{
+  "_catatan": "Negara level di Peta Dunia: kode bendera -> id ISO 3166-1 numerik (world-atlas) + titik pin [bujur, lintang]. keepBox (opsional) membuang wilayah seberang laut di luar kotak [bujurMin, lintangMin, bujurMax, lintangMax]. Dibaca tools/build-map.mjs saat build.",
+  "countries": {
+    "us": { "iso": "840", "pin": [-98, 39] },
+    "it": { "iso": "380", "pin": [12.5, 42.6] },
+    "mx": { "iso": "484", "pin": [-102, 23.5] },
+    "fr": { "iso": "250", "pin": [2.4, 46.6], "keepBox": [-6, 41, 10, 52] },
+    "jp": { "iso": "392", "pin": [138.5, 36.4] },
+    "ar": { "iso": "032", "pin": [-64.5, -34] },
+    "au": { "iso": "036", "pin": [134, -25] },
+    "tr": { "iso": "792", "pin": [35, 39] },
+    "kr": { "iso": "410", "pin": [127.9, 36.4] },
+    "sa": { "iso": "682", "pin": [45, 24] },
+    "cn": { "iso": "156", "pin": [104, 34.5] },
+    "ng": { "iso": "566", "pin": [8, 9.6] },
+    "th": { "iso": "764", "pin": [101, 15.5] },
+    "in": { "iso": "356", "pin": [79, 22] },
+    "id": { "iso": "360", "pin": [113.5, -1.5] }
+  }
+}

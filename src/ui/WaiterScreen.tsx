@@ -8,6 +8,7 @@ import type { WaiterLink, EmojiKind } from '../net/protocol';
 import type { EmojiMsg } from '../game/session';
 import { getLevel } from '../data/levels';
 import { getCountry } from '../data/countries';
+import { decorEffects } from '../data/decor';
 import { tableLayout } from '../data/layouts';
 import { MENUS } from '../data/menus';
 import { TABLE_COLORS } from '../data/palette';
@@ -17,11 +18,14 @@ import { useStore, useTicker } from './store';
 import { FoodIcon, Icon } from './components';
 import { EmojiBar, MessageBubble, TopBar } from './hud';
 import { reportFrame } from './fps';
+import { tutorialHint } from '../game/tutorial';
+import { say, sayHint } from '../engine/speech';
+import { TutorialIcon } from './tutorialUi';
 
 interface Banner { dishes: { menu: string; table: number }[]; at: number }
 
 /** Layar Pelayan (Adik): cukup ketuk; hampir tanpa tulisan. */
-export function WaiterScreen({ link, level, visible, onPause }: { link: WaiterLink; level: number; visible: boolean; onPause: () => void }) {
+export function WaiterScreen({ link, level, visible, onPause, decor }: { link: WaiterLink; level: number; visible: boolean; onPause: () => void; decor?: Record<string, string> }) {
   const host = useRef<HTMLDivElement>(null);
   const viewRef = useRef<DiningView | null>(null);
   const st = useStore(settings);
@@ -35,7 +39,8 @@ export function WaiterScreen({ link, level, visible, onPause }: { link: WaiterLi
 
   useEffect(() => {
     const el = host.current!;
-    const view = new DiningView(el, effectivePreset(), country, tableLayout(L.tables), st.waiterLook);
+    const fx = decorEffects(decor);
+    const view = new DiningView(el, effectivePreset(), country, tableLayout(L.tables), { ...st.waiterLook, apron: fx.apron ?? st.waiterLook.apron }, fx);
     view.insets = { left: 20, right: 20, top: 64, bottom: 0 };
     view.fit();
     viewRef.current = view;
@@ -43,8 +48,11 @@ export function WaiterScreen({ link, level, visible, onPause }: { link: WaiterLi
       if (!visRef.current) return;
       const s = link.getState();
       if (!s) return;
-      view.showGuide = guideRef.current;
-      view.guideTarget = s.waiter.goal ?? suggestWaiterTarget(s);
+      const tut = tutorialHint(s);
+      const tutTarget = tut?.waiter?.target ?? null;
+      view.showGuide = guideRef.current || !!tutTarget;
+      view.tutorialArrow = !!tutTarget && !s.waiter.goal;
+      view.guideTarget = s.waiter.goal ?? tutTarget ?? suggestWaiterTarget(s);
       view.update(dt, s);
       view.render();
       reportFrame('waiter', dt, view);
@@ -62,13 +70,19 @@ export function WaiterScreen({ link, level, visible, onPause }: { link: WaiterLi
       if (m.t !== 'event') return;
       const e = m.e;
       switch (e.e) {
-        case 'bell': setBanner({ dishes: e.dishes, at: performance.now() }); audio.play('bell'); vibrate([60, 40, 60]); break;
+        case 'bell': setBanner({ dishes: e.dishes, at: performance.now() }); audio.play('bell'); vibrate([60, 40, 60]); setTimeout(() => say('voice.foodReady'), 900); break;
         case 'noop': view.flashNoop(e.target); audio.play('boing'); break;
         case 'walk': audio.play('step'); break;
         case 'arrive': audio.play('ding'); break;
         case 'greet': case 'seated': audio.play('pop'); break;
         case 'order': audio.play('order'); break;
-        case 'pickup': case 'collect': case 'dropDirty': audio.play('plate'); break;
+        case 'pickup': {
+          audio.play('plate');
+          const st = link.getState(); const c = st?.waiter.carry;
+          if (st && c?.k === 'dish') say('voice.table', { color: t(`color.${st.tables[c.dish.table].color}`) });
+          break;
+        }
+        case 'collect': case 'dropDirty': audio.play('plate'); break;
         case 'dropOrder': audio.play('whoosh'); break;
         case 'served': audio.play('happy'); break;
         case 'wrong': audio.play('boing'); break;
@@ -86,11 +100,20 @@ export function WaiterScreen({ link, level, visible, onPause }: { link: WaiterLi
   }, [banner]);
 
   const s = link.getState();
+  const tut = s ? tutorialHint(s) : null;
+  const tutKey = tut ? tut.step + (tut.waiter?.icon ?? '') : '';
+  const lastTut = useRef('');
+  useEffect(() => {
+    if (!tut || tutKey === lastTut.current) return;
+    lastTut.current = tutKey;
+    if (tut.step === 'done') say('voice.done'); else if (tut.waiter?.voice) sayHint(tut.waiter.voice);
+  }, [tutKey]);
   return (
     <div class="screen waiter-screen">
       <div class="view-host" ref={host} />
       {s && <TopBar state={s} onPause={onPause} role="waiter" center={banner ? <FoodBanner banner={banner} s={s} /> : null} />}
       {s && <CarrySlot s={s} />}
+      {tut && !banner && (tut.waiter || tut.step === 'done') && <TutorialIcon step={tut.step} icon={tut.waiter?.icon ?? ''} />}
       <MessageBubble msg={msg} from="kakak" />
       <div class="waiter-actions">
         <EmojiBar big kinds={['thumb', 'heart', 'help'] as EmojiKind[]} onSend={(k) => { link.send({ t: 'emoji', kind: k }); audio.play('pop'); }} />

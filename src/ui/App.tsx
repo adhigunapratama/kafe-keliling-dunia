@@ -4,12 +4,14 @@ import { TitleScreen } from './TitleScreen';
 import { TestModeScreen } from './TestModeScreen';
 import { HostFlow } from './HostFlow';
 import { GuestFlow } from './GuestFlow';
+import { WorldMapScreen } from './WorldMapScreen';
+import { SoloShop } from './SoloShop';
 import { FpsCounter } from './FpsCounter';
 import { UpdateToast } from './pwa';
 import { recallRoom, roomServerUrl } from '../net/client';
 import { loadProgress } from '../game/progress';
 
-type Route = { name: 'title' } | { name: 'test'; level: number } | { name: 'host'; level: number } | { name: 'join' };
+type Route = { name: 'title' } | { name: 'test'; level: number } | { name: 'host'; level: number } | { name: 'join' } | { name: 'map' };
 
 function initialRoute(): Route {
   const q = new URLSearchParams(location.search);
@@ -26,12 +28,17 @@ function initialRoute(): Route {
 export function App() {
   const [route, setRoute] = useState<Route>(initialRoute);
   const [, force] = useState(0);
+  const [shop, setShop] = useState(false);
   useEffect(() => onLangChange(() => force((x) => x + 1)), []);
   return (
     <>
       {route.name === 'title' && (
-        <TitleScreen onHost={(level) => setRoute({ name: 'host', level })} onJoin={() => setRoute({ name: 'join' })} onTest={(level) => setRoute({ name: 'test', level })} />
+        <TitleScreen onHost={(level) => setRoute({ name: 'host', level })} onJoin={() => setRoute({ name: 'join' })} onTest={(level) => setRoute({ name: 'test', level })} onMap={() => setRoute({ name: 'map' })} />
       )}
+      {route.name === 'map' && (
+        <WorldMapScreen onBack={() => setRoute({ name: 'title' })} onPlay={(level) => setRoute(roomServerUrl() ? { name: 'host', level } : { name: 'test', level })} onDecorate={() => setShop(true)} />
+      )}
+      {route.name === 'map' && shop && <SoloShop onClose={() => setShop(false)} />}
       {route.name === 'host' && <HostFlow level={route.level} onExit={() => setRoute({ name: 'title' })} />}
       {route.name === 'join' && <GuestFlow onExit={() => setRoute({ name: 'title' })} />}
       {route.name === 'test' && (

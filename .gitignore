@@ -9,3 +9,4 @@ dev-dist
 !.env.example
 !.env.production
 test-results
+public/map/world.bin
