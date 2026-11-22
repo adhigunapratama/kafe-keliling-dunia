@@ -112,6 +112,12 @@ memperbarui"**.
 
 ### Kalau build gagal
 
+**`Could not read package.json` / `ENOENT ... package.json`:** build itu berasal dari
+branch yang belum berisi kode game (biasanya `main` sebelum Pull Request tahap
+digabung). Ini wajar dan tidak mengganggu preview branch lain. Cek tab
+**Deployments → Preview** untuk branch tahap (mis. `tahap-1`). Catatan: preview hanya
+dibuat untuk push yang terjadi *setelah* proyek Pages dibuat.
+
 1. Workers & Pages → proyek → **Deployments** → klik deployment yang gagal →
    **View details** untuk melihat log.
 2. Pastikan **Build command** = `npm run build` dan **Build output directory** = `dist`.
