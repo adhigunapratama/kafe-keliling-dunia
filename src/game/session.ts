@@ -17,10 +17,10 @@ export class HostSession {
   private emojiL = new Set<(m: EmojiMsg) => void>();
   private waiterL = new Set<(m: HostMsg) => void>();
 
-  constructor(level: number, relaxed: boolean, seed?: number) {
+  constructor(level: number, relaxed: boolean, seed?: number, tutorial = false) {
     const L = getLevel(level);
     const country = getCountry(L.country);
-    this.sim = new CafeSim({ level, relaxed, seed, obstacles: decorObstacles(country.decorDining) });
+    this.sim = new CafeSim({ level, relaxed, seed, tutorial, obstacles: decorObstacles(country.decorDining) });
     this.sim.on((e) => {
       this.evL.forEach((f) => f(e));
       this.waiterL.forEach((f) => f({ t: 'event', e }));

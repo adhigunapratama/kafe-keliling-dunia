@@ -1,17 +1,18 @@
 {
   "name": "kafe-keliling-dunia",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.4.0",
   "type": "module",
   "description": "Kafe Keliling Dunia - game co-op 3D untuk dua anak (Koki & Pelayan)",
   "scripts": {
-    "dev": "vite --host",
-    "build": "tsc --noEmit && vite build",
+    "dev": "node tools/build-map.mjs && vite --host",
+    "build": "node tools/build-map.mjs && tsc --noEmit && vite build",
     "preview": "vite preview --host",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "smoke": "node tools/smoke.mjs"
+    "smoke": "node tools/smoke.mjs",
+    "map": "node tools/build-map.mjs"
   },
   "engines": {
     "node": ">=20"
@@ -24,10 +25,15 @@
   },
   "devDependencies": {
     "@types/three": "^0.170.0",
+    "d3-geo": "^3.1.2",
+    "d3-geo-projection": "^4.0.0",
+    "topojson-client": "^3.1.0",
+    "topojson-simplify": "^3.0.3",
     "typescript": "^5.9.3",
     "vite": "^7.3.8",
     "vite-plugin-pwa": "^2.0.0",
     "vitest": "^5.1.1",
-    "workbox-window": "^7.4.1"
+    "workbox-window": "^7.4.1",
+    "world-atlas": "^2.0.2"
   }
 }

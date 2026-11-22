@@ -6,7 +6,7 @@ import { adjustPresetByFps, guessPresetFromGpu } from '../engine/quality';
 import { LEVELS, getLevel } from '../data/levels';
 import { getCountry } from '../data/countries';
 import { t, setLang } from '../data/i18n';
-import { loadProgress, saveProgress, totalStars, EMPTY_PROGRESS } from '../game/progress';
+import { saveStore, resetProgress, totalStars } from '../game/progress';
 import { isLevelPlayable } from '../game/levelCheck';
 import { settings, effectivePreset } from './settings';
 import { useStore } from './store';
@@ -15,13 +15,13 @@ import { SettingsModal } from './SettingsModal';
 import { reportFrame } from './fps';
 import { roomServerUrl } from '../net/client';
 
-export function TitleScreen({ onHost, onJoin, onTest }: { onHost: (level: number) => void; onJoin: () => void; onTest: (level: number) => void }) {
+export function TitleScreen({ onHost, onJoin, onTest, onMap }: { onHost: (level: number) => void; onJoin: () => void; onTest: (level: number) => void; onMap: () => void }) {
   const hasServer = !!roomServerUrl();
   const host = useRef<HTMLDivElement>(null);
   const s = useStore(settings);
   const [showSettings, setShowSettings] = useState(false);
   const [confirmNew, setConfirmNew] = useState(false);
-  const [prog, setProg] = useState(loadProgress);
+  const prog = useStore(saveStore);
 
   useEffect(() => {
     const st = settings.get();
@@ -65,6 +65,7 @@ export function TitleScreen({ onHost, onJoin, onTest }: { onHost: (level: number
         </Btn>
         <button class="test-note" onClick={() => { audio.unlock(); onTest(playable); }}><Icon name="chefHat" /> + <Icon name="tray" /> {t('title.testMode')}</button>
         <div class="title-row">
+          <Btn class="btn-map" onClick={() => { audio.unlock(); onMap(); }}><Icon name="globe" /> {t('map.title')}</Btn>
           <IconBtn icon="gear" label={t('common.settings')} onClick={() => setShowSettings(true)} />
           <IconBtn icon={s.muted ? 'soundOff' : 'sound'} label={t('common.sound')} onClick={() => { const m = !s.muted; settings.update({ muted: m }); audio.setMuted(m); }} />
           <Btn class="btn-lang" onClick={() => { const l = s.lang === 'id' ? 'en' : 'id'; settings.update({ lang: l }); setLang(l); }}>
@@ -78,7 +79,7 @@ export function TitleScreen({ onHost, onJoin, onTest }: { onHost: (level: number
         <Modal onClose={() => setConfirmNew(false)} class="confirm">
           <p>{t('title.newGameConfirm')}</p>
           <div class="row">
-            <Btn color="red" onClick={() => { const p = { ...EMPTY_PROGRESS, best: {} }; saveProgress(p); setProg(p); setConfirmNew(false); }}>{t('common.yes')}</Btn>
+            <Btn color="red" onClick={() => { resetProgress(); setConfirmNew(false); }}>{t('common.yes')}</Btn>
             <Btn onClick={() => setConfirmNew(false)}>{t('common.no')}</Btn>
           </div>
         </Modal>

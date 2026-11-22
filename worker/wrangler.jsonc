@@ -6,10 +6,16 @@
   "compatibility_date": "2026-11-01",
   "observability": { "enabled": true },
   "durable_objects": {
-    "bindings": [{ "name": "ROOMS", "class_name": "KafeRoom" }]
+    "bindings": [
+      { "name": "ROOMS", "class_name": "KafeRoom" },
+      { "name": "BACKUPS", "class_name": "KafeBackup" }
+    ]
   },
   // Paket gratis Cloudflare hanya mendukung Durable Object dengan backend SQLite.
-  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["KafeRoom"] }],
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["KafeRoom"] },
+    { "tag": "v2", "new_sqlite_classes": ["KafeBackup"] }
+  ],
   "vars": {
     // Asal (origin) yang boleh memakai server ini, dipisah koma. "*" = wildcard satu bagian nama.
     // Ganti "cafe-abangade" bila nama proyek Pages Anda berbeda.

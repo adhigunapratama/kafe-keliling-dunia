@@ -127,7 +127,7 @@ try {
   ok(true, 'Adik melanjutkan game');
 
   // 10. akhir level -> hasil di kedua layar
-  await chef.evaluate(() => { const s = window.__kkdHost.session.sim.state; s.t = s.duration - 0.3; });
+  await chef.evaluate(() => { const s = window.__kkdHost.session.sim.state; s.tutorial = false; s.t = s.duration - 0.3; });
   await waiter.waitForSelector('.result-screen', { timeout: 8000 });
   await chef.waitForSelector('.result-screen', { timeout: 8000 });
   ok(true, 'layar Hasil muncul di kedua perangkat');

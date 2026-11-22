@@ -14,6 +14,8 @@ export interface SimOptions {
   level: number;
   relaxed?: boolean;
   seed?: number;
+  /** Jalankan tutorial (hanya untuk level bertanda tutorial). */
+  tutorial?: boolean;
   /** Penghalang tambahan di ruang makan (mis. tanaman hiasan): [x, z, radius]. */
   obstacles?: [number, number, number][];
 }
@@ -53,7 +55,7 @@ export function buildDiningNav(tables: { x: number; z: number }[], obstacles: [n
 
 /** Penghalang dari hiasan (tanaman) negara. */
 export function decorObstacles(items: { kind: string; x?: number; z?: number; size?: number }[]): [number, number, number][] {
-  return items.filter((d) => d.kind === 'plant').map((d) => [d.x!, d.z!, 0.45 * (d.size ?? 1)]);
+  return items.filter((d) => d.kind === 'plant' || d.kind === 'cactus' || d.kind === 'bamboo').map((d) => [d.x!, d.z!, 0.45 * (d.size ?? 1)]);
 }
 
 /**
@@ -89,6 +91,7 @@ export class CafeSim {
       waiter: { move: stillMove(DINING.waiterStart, 0), carry: null, goal: null, arriveAt: 0 },
       stats: { score: 0, happy: 0, angry: 0, washed: 0, right: 0, wrong: 0, bells: 0, bellsOnTime: 0 },
       nextArrival: 2,
+      tutorial: !!opts.tutorial && !!L.tutorial,
       seq: 1,
       rng: seed,
     };
@@ -103,6 +106,8 @@ export class CafeSim {
   party(id: number) { return this.state.parties.find((p) => p.id === id); }
   table(id: number) { return this.state.tables[id]; }
   waiterPos(): P2 { const s = moveAt(this.state.waiter.move, this.state.t); return [s.x, s.z]; }
+  /** Tutorial masih berjalan (selesai setelah piring pertama dicuci). */
+  tutorialActive(): boolean { return this.state.tutorial && this.state.stats.washed === 0; }
   private patienceMul() { return this.state.relaxed ? RELAXED.patience : 1; }
 
   private setState(p: Party, st: Party['state'], patienceSec = 0) {
@@ -146,6 +151,8 @@ export class CafeSim {
     const queued = this.queueParties().length;
     const active = s.parties.filter((p) => p.state !== 'leaving').length;
     const relaxMul = s.relaxed ? RELAXED.arrival : 1;
+    // tutorial: satu tamu saja sampai satu putaran selesai
+    if (this.tutorialActive() && (s.parties.length > 0 || s.stats.happy > 0)) { s.nextArrival = s.t + 1; return; }
     if (queued >= DINING.queue.length || active >= L.tables + 1) { s.nextArrival = s.t + 2; return; }
     const size = this.rng.int(1, L.maxParty);
     const p: Party = { id: this.id(), state: 'arriving', guests: [], table: -1, queueIdx: queued, patience: 1, patienceFull: 1, stateSince: s.t, mood: 'ok' };
@@ -333,7 +340,9 @@ export class CafeSim {
   washPlate(): boolean {
     const s = this.state;
     if (s.sink <= 0) return false;
+    const wasTut = this.tutorialActive();
     s.sink--; s.clean++; s.stats.washed++;
+    if (wasTut) { s.nextArrival = s.t + 2; this.emit({ e: 'tutorialDone' }); }
     this.emit({ e: 'washed' });
     this.platePending();
     return true;
@@ -344,6 +353,8 @@ export class CafeSim {
     const s = this.state;
     if (s.ended) return;
     s.t += dt;
+    // timer berhenti selama tutorial
+    if (this.tutorialActive()) s.duration += dt;
     if (s.t >= s.duration) { s.ended = true; this.emit({ e: 'end' }); return; }
     if (s.t >= s.nextArrival) this.trySpawn();
 
@@ -376,9 +387,9 @@ export class CafeSim {
         return;
     }
     // kesabaran
-    const draining =
+    const draining = !this.tutorialActive() && (
       p.state === 'waitSeat' || p.state === 'wantOrder' ||
-      (p.state === 'waitFood' && p.guests.some((g) => g.dishState === 'waiting'));
+      (p.state === 'waitFood' && p.guests.some((g) => g.dishState === 'waiting')));
     if (draining) {
       p.patience -= dt / p.patienceFull;
       if (p.patience <= 0) this.leaveAngry(p);

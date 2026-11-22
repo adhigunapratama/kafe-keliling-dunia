@@ -17,6 +17,7 @@ import { isLevelPlayable } from '../src/game/levelCheck';
 import { buildDiningNav, chairPos, decorObstacles, tableStand } from '../src/game/sim';
 import { placeStations } from '../src/scenes/kitchen';
 import { hasProceduralModel } from '../src/models/food';
+import mapCountries from '../src/data/map-countries.json';
 
 describe('data konten', () => {
   it('ada 15 level, Indonesia terakhir dan final', () => {
@@ -67,6 +68,15 @@ describe('data konten', () => {
     }
   });
 
+  it('setiap bahan punya ikon (dan ikon tabur bila ada)', () => {
+    for (const ing of Object.values(INGREDIENTS)) {
+      expect(FOOD_ICONS[ing.icon], ing.id).toBeDefined();
+      if (ing.topIcon) expect(FOOD_ICONS[ing.topIcon], ing.topIcon).toBeDefined();
+    }
+  });
+
+  it('level 1–5 bisa dimainkan', () => { for (let i = 1; i <= 5; i++) expect(isLevelPlayable(i), `level ${i}`).toBe(true); });
+
   it('teks EN lengkap (kunci sama dengan ID) dan tidak kosong', () => {
     expect(Object.keys(en).sort()).toEqual(Object.keys(id).sort());
     for (const [k, v] of Object.entries(en)) expect(v.length, k).toBeGreaterThan(0);
@@ -76,6 +86,15 @@ describe('data konten', () => {
     for (const c of COUNTRIES) { expect(hasKey(`country.${c.id}`), c.id).toBe(true); expect(FLAG_CODES).toContain(c.flag); }
     for (const s of STATION_IDS) expect(hasKey(`station.${s}`), s).toBe(true);
     for (const c of TABLE_COLOR_ORDER) expect(hasKey(`color.${c}`), c).toBe(true);
+  });
+
+  it('setiap negara level punya pin di peta', () => {
+    for (const c of COUNTRIES) {
+      const m = (mapCountries.countries as Record<string, { iso: string; pin: number[] }>)[c.flag];
+      expect(m, c.id).toBeDefined();
+      expect(m.iso).toMatch(/^\d{3}$/);
+      expect(Math.abs(m.pin[0])).toBeLessThanOrEqual(180);
+    }
   });
 
   it('stasiun dapur level yang bisa dimainkan muat di slot dapur', () => {

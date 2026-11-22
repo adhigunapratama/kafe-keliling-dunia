@@ -4,12 +4,13 @@ import { TitleScreen } from './TitleScreen';
 import { TestModeScreen } from './TestModeScreen';
 import { HostFlow } from './HostFlow';
 import { GuestFlow } from './GuestFlow';
+import { WorldMapScreen } from './WorldMapScreen';
 import { FpsCounter } from './FpsCounter';
 import { UpdateToast } from './pwa';
 import { recallRoom, roomServerUrl } from '../net/client';
 import { loadProgress } from '../game/progress';
 
-type Route = { name: 'title' } | { name: 'test'; level: number } | { name: 'host'; level: number } | { name: 'join' };
+type Route = { name: 'title' } | { name: 'test'; level: number } | { name: 'host'; level: number } | { name: 'join' } | { name: 'map' };
 
 function initialRoute(): Route {
   const q = new URLSearchParams(location.search);
@@ -30,7 +31,10 @@ export function App() {
   return (
     <>
       {route.name === 'title' && (
-        <TitleScreen onHost={(level) => setRoute({ name: 'host', level })} onJoin={() => setRoute({ name: 'join' })} onTest={(level) => setRoute({ name: 'test', level })} />
+        <TitleScreen onHost={(level) => setRoute({ name: 'host', level })} onJoin={() => setRoute({ name: 'join' })} onTest={(level) => setRoute({ name: 'test', level })} onMap={() => setRoute({ name: 'map' })} />
+      )}
+      {route.name === 'map' && (
+        <WorldMapScreen onBack={() => setRoute({ name: 'title' })} onPlay={(level) => setRoute(roomServerUrl() ? { name: 'host', level } : { name: 'test', level })} />
       )}
       {route.name === 'host' && <HostFlow level={route.level} onExit={() => setRoute({ name: 'title' })} />}
       {route.name === 'join' && <GuestFlow onExit={() => setRoute({ name: 'title' })} />}

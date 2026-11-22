@@ -10,13 +10,14 @@
  */
 import { KafeRoom, type Env } from './room';
 import { originAllowed } from './origin';
-export { KafeRoom };
+import { KafeBackup, FAMILY_CODE_RE } from './backup';
+export { KafeRoom, KafeBackup };
 
 const CODE_RE = /^\d{4}$/;
 
 function cors(origin: string | null): Record<string, string> {
   return origin
-    ? { 'Access-Control-Allow-Origin': origin, 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Max-Age': '86400', Vary: 'Origin' }
+    ? { 'Access-Control-Allow-Origin': origin, 'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Max-Age': '86400', Vary: 'Origin' }
     : {};
 }
 
@@ -49,6 +50,14 @@ export default {
         if (res.ok) return json({ code, token: res.token }, 200, origin);
       }
       return json({ error: 'penuh' }, 503, origin);
+    }
+
+    const b = url.pathname.match(/^\/backup\/([A-Z0-9-]+)$/);
+    if (b) {
+      if (!FAMILY_CODE_RE.test(b[1])) return json({ error: 'kode' }, 400, origin);
+      if (req.method !== 'GET' && req.method !== 'PUT') return json({ error: 'method' }, 405, origin);
+      const res = await env.BACKUPS.get(env.BACKUPS.idFromName(b[1])).fetch(req);
+      return new Response(res.body, { status: res.status, headers: { 'Content-Type': 'application/json', ...cors(origin) } });
     }
 
     const m = url.pathname.match(/^\/rooms\/(\d+)\/ws$/);

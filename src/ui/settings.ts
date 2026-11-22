@@ -15,6 +15,7 @@ export interface Settings {
   muted: boolean;
   music: boolean;
   guide: boolean;
+  narration: boolean;
   relaxed: boolean;
   chefLook: PersonLook;
   waiterLook: PersonLook;
@@ -32,6 +33,7 @@ export const DEFAULT_SETTINGS: Settings = {
   muted: false,
   music: true,
   guide: true,
+  narration: true,
   relaxed: false,
   chefLook: { shirt: 0xffffff, pants: 0x3b3355, skin: 0xf2c29b, hair: 0x6b4226, chefHat: true, scarf: 0xe9573f },
   waiterLook: { shirt: 0xffd45c, pants: 0x3b3355, skin: 0x8d5a3b, hair: 0x2b2340, apron: 0x1f6fd1, hairStyle: 2 },

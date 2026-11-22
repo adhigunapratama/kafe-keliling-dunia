@@ -25,7 +25,7 @@ type ViewMode = 'both' | 'chef' | 'waiter';
 export function TestModeScreen({ level, onExit, onLevel }: { level: number; onExit: () => void; onLevel: (id: number) => void }) {
   const st = useStore(settings);
   const [round, setRound] = useState(0);
-  const session = useMemo(() => new HostSession(level, st.relaxed), [level, round]);
+  const session = useMemo(() => new HostSession(level, st.relaxed, undefined, !!getLevel(level).tutorial && !loadProgress().best[level]), [level, round]);
   const link = useMemo(() => session.localWaiterLink(), [session]);
   const [mode, setMode] = useState<ViewMode>(() => (window.innerWidth >= 1000 ? 'both' : 'chef'));
   const [paused, setPaused] = useState(false);
