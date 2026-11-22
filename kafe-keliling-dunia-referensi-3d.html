@@ -1,0 +1,440 @@
+<!-- REFERENSI GAYA 3D "Kafe Keliling Dunia" (sudah disetujui). Berisi adegan: kitchen (dapur), dining (ruang makan), cafe (kafe judul), worldmap (peta dunia). Pakai sebagai acuan warna, cahaya, kamera, bentuk tokoh chibi (fungsi person), dan geometri membulat. Butuh three@0.170 dan geo.json hasil script peta. Contoh: scene.html?scene=kitchen -->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>html,body{margin:0;background:transparent}canvas{display:block}</style>
+<script type="importmap">
+{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}
+</script>
+</head>
+<body>
+<script type="module">
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+
+const params = new URLSearchParams(location.search);
+const sceneName = params.get('scene') || 'kitchen';
+const W = +(params.get('w') || 1080), H = +(params.get('h') || 680);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(W, H);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+document.body.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+
+// ---------- helpers ----------
+const mat = (color, o = {}) => new THREE.MeshStandardMaterial({ color, roughness: o.r ?? 0.75, metalness: o.m ?? 0, transparent: o.t ?? false, opacity: o.o ?? 1, map: o.map ?? null, emissive: o.e ?? 0x000000, emissiveIntensity: o.ei ?? 1 });
+function add(mesh, parent = scene, cast = true, receive = true) { mesh.castShadow = cast; mesh.receiveShadow = receive; parent.add(mesh); return mesh; }
+function rbox(w, h, d, color, x, y, z, r = 0.08, parent = scene, o = {}) {
+  const m = new THREE.Mesh(new RoundedBoxGeometry(w, h, d, 4, Math.min(r, w / 2 - 0.001, h / 2 - 0.001, d / 2 - 0.001)), mat(color, o));
+  m.position.set(x, y, z); return add(m, parent);
+}
+function cyl(rt, rb, h, color, x, y, z, parent = scene, o = {}, seg = 40) {
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, seg), mat(color, o));
+  m.position.set(x, y, z); return add(m, parent);
+}
+function sph(r, color, x, y, z, parent = scene, o = {}) {
+  const m = new THREE.Mesh(new THREE.SphereGeometry(r, 32, 20), mat(color, o));
+  m.position.set(x, y, z); return add(m, parent);
+}
+function cap(r, len, color, x, y, z, parent = scene, o = {}) {
+  const m = new THREE.Mesh(new THREE.CapsuleGeometry(r, len, 8, 20), mat(color, o));
+  m.position.set(x, y, z); return add(m, parent);
+}
+function canvasTex(w, h, draw, repeat) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  draw(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+  if (repeat) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(repeat[0], repeat[1]); }
+  return t;
+}
+
+// chibi person; faces +z locally
+function person(o) {
+  const g = new THREE.Group();
+  const seated = o.seated;
+  if (!seated) {
+    cap(0.085, 0.22, o.pants, -0.1, 0.2, 0, g);
+    cap(0.085, 0.22, o.pants, 0.1, 0.2, 0, g);
+  }
+  const by = seated ? 0.62 : 0.66;
+  const body = cap(0.25, 0.22, o.shirt, 0, by, 0, g); body.scale.set(1, 1, 0.85);
+  if (o.apron) { const a = rbox(0.38, 0.4, 0.06, o.apron, 0, by - 0.05, 0.2, 0.03, g); }
+  const armL = cap(0.07, 0.26, o.shirt, -0.3, by + 0.02, 0, g); armL.rotation.z = 0.35;
+  const armR = cap(0.07, 0.26, o.shirt, 0.3, by + 0.02, 0, g); armR.rotation.z = -0.35;
+  if (o.armUp) { armR.rotation.z = -2.4; armR.position.set(0.34, by + 0.3, 0.05); }
+  const hy = by + 0.62;
+  sph(0.3, o.skin, 0, hy, 0, g);
+  if (o.hair) {
+    const hair = new THREE.Mesh(new THREE.SphereGeometry(0.315, 32, 16, 0, Math.PI * 2, 0, Math.PI * 0.55), mat(o.hair));
+    hair.position.set(0, hy + 0.01, -0.02); hair.rotation.x = -0.25; add(hair, g);
+  }
+  sph(0.038, 0x2b2340, -0.1, hy + 0.02, 0.27, g, { r: 0.3 });
+  sph(0.038, 0x2b2340, 0.1, hy + 0.02, 0.27, g, { r: 0.3 });
+  sph(0.05, 0xf29b8f, -0.17, hy - 0.06, 0.24, g).scale.set(1, 0.6, 0.5);
+  sph(0.05, 0xf29b8f, 0.17, hy - 0.06, 0.24, g).scale.set(1, 0.6, 0.5);
+  if (o.chefHat) {
+    cyl(0.22, 0.22, 0.16, 0xffffff, 0, hy + 0.3, 0, g);
+    sph(0.17, 0xffffff, -0.1, hy + 0.45, 0, g); sph(0.17, 0xffffff, 0.1, hy + 0.45, 0, g); sph(0.18, 0xffffff, 0, hy + 0.5, 0.02, g);
+  }
+  if (o.scarf) { const t = new THREE.Mesh(new THREE.TorusGeometry(0.17, 0.05, 12, 30), mat(o.scarf)); t.rotation.x = Math.PI / 2; t.position.y = by + 0.3; add(t, g); }
+  return g;
+}
+function plate(x, y, z, parent = scene, dirty = false) {
+  const p = new THREE.Group(); p.position.set(x, y, z); parent.add(p);
+  cyl(0.24, 0.2, 0.04, 0xffffff, 0, 0.02, 0, p, { r: 0.35 });
+  if (dirty) { sph(0.04, 0xb08a5a, 0.05, 0.05, 0.03, p).scale.set(1, 0.4, 1); sph(0.03, 0xc9432a, -0.06, 0.05, -0.04, p).scale.set(1, 0.4, 1); }
+  return p;
+}
+function pizza(x, y, z, parent = scene, s = 1) {
+  const p = new THREE.Group(); p.position.set(x, y, z); p.scale.setScalar(s); parent.add(p);
+  cyl(0.21, 0.21, 0.04, 0xe2b866, 0, 0.02, 0, p);
+  cyl(0.18, 0.18, 0.045, 0xd9452d, 0, 0.025, 0, p);
+  [[0.06, 0.05], [-0.07, 0.03], [0.01, -0.08], [-0.03, 0.1]].forEach(([a, b]) => cyl(0.035, 0.035, 0.05, 0xfff2c2, a, 0.03, b, p, {}, 16));
+  [[0.1, -0.03], [-0.1, -0.06]].forEach(([a, b]) => sph(0.025, 0x3f8f3a, a, 0.05, b, p).scale.set(1, 0.3, 1));
+  return p;
+}
+function spaghetti(x, y, z, parent = scene) {
+  const p = plate(x, y, z, parent);
+  sph(0.15, 0xf4d58d, 0, 0.06, 0, p).scale.set(1, 0.45, 1);
+  sph(0.07, 0xc9432a, 0, 0.12, 0, p).scale.set(1, 0.5, 1);
+  return p;
+}
+
+// lights
+const hemi = new THREE.HemisphereLight(0xfff4e6, 0xb5a28c, 1.5); scene.add(hemi);
+const sun = new THREE.DirectionalLight(0xfff1dc, 2.4);
+sun.position.set(5, 11, 7); sun.castShadow = true;
+sun.shadow.mapSize.set(4096, 4096); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02;
+Object.assign(sun.shadow.camera, { left: -9, right: 9, top: 9, bottom: -9, near: 0.5, far: 40 });
+scene.add(sun);
+const fill = new THREE.DirectionalLight(0xdfeaff, 0.5); fill.position.set(-6, 5, 8); scene.add(fill);
+
+// camera: orthographic, semi top-down
+const aspect = W / H;
+const viewH = +(params.get('vh') || 11.2);
+let camera = new THREE.OrthographicCamera(-viewH * aspect / 2, viewH * aspect / 2, viewH / 2, -viewH / 2, 0.1, 100);
+const camTarget = new THREE.Vector3(+(params.get('tx') || 0), +(params.get('ty') || 0.6), +(params.get('tz') || 0));
+camera.position.set(camTarget.x + 14, camTarget.y + 13, camTarget.z + 14);
+camera.lookAt(camTarget);
+camera.updateMatrixWorld();
+
+const anchors = {};
+function anchor(name, x, y, z) {
+  const v = new THREE.Vector3(x, y, z).project(camera);
+  anchors[name] = [Math.round((v.x + 1) / 2 * W), Math.round((1 - v.y) / 2 * H)];
+}
+
+function room(floorTex, wallL, wallR, trim, opening) {
+  rbox(10, 0.3, 10, 0xffffff, 0, -0.15, 0, 0.06, scene, { map: floorTex, r: 0.85 });
+  // left wall (x=-5)
+  rbox(0.25, 3, 10, wallL, -5.12, 1.5, 0, 0.05);
+  rbox(0.3, 0.9, 10, trim, -5.08, 0.45, 0, 0.05);
+  // right wall (z=-5), optionally with opening
+  if (opening) {
+    const [x0, x1, y0, y1] = opening;
+    rbox(x0 + 5.25, 3, 0.25, wallR, (-5.25 + x0) / 2, 1.5, -5.12, 0.05);
+    rbox(5 - x1, 3, 0.25, wallR, (x1 + 5) / 2, 1.5, -5.12, 0.05);
+    rbox(x1 - x0, y0, 0.25, wallR, (x0 + x1) / 2, y0 / 2, -5.12, 0.05);
+    rbox(x1 - x0, 3 - y1, 0.25, wallR, (x0 + x1) / 2, (3 + y1) / 2, -5.12, 0.05);
+    rbox(x1 - x0, y1 - y0, 0.05, 0xffe6a8, (x0 + x1) / 2, (y0 + y1) / 2, -5.3, 0.01, scene, { e: 0xffd27a, ei: 0.35 });
+    rbox(x1 - x0 + 0.2, 0.12, 0.45, 0xd9a066, (x0 + x1) / 2, y0, -4.95, 0.04);
+  } else {
+    rbox(10.25, 3, 0.25, wallR, -0.12, 1.5, -5.12, 0.05);
+  }
+  rbox(10.3, 0.9, 0.3, trim, -0.12, 0.45, -5.08, 0.05);
+}
+
+// ---------- scenes ----------
+if (sceneName === 'kitchen') {
+  const floorTex = canvasTex(512, 512, (c, w, h) => {
+    const n = 8, s = w / n;
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) { c.fillStyle = (i + j) % 2 ? '#efe8da' : '#dcd2bf'; c.fillRect(i * s, j * s, s, s); }
+    c.strokeStyle = 'rgba(255,255,255,0.5)'; c.lineWidth = 3;
+    for (let i = 0; i <= n; i++) { c.beginPath(); c.moveTo(i * s, 0); c.lineTo(i * s, h); c.stroke(); c.beginPath(); c.moveTo(0, i * s); c.lineTo(w, i * s); c.stroke(); }
+  });
+  room(floorTex, 0xf6e7d2, 0xeed9bb, 0x9fd3cf, [2.2, 3.8, 1.05, 2.3]);
+  // shelves on left wall
+  rbox(0.4, 0.08, 3, 0xd9a066, -4.85, 2.2, -2, 0.03);
+  [[-3, 0xc9432a], [-2.4, 0xffc233], [-1.8, 0x3fa7a0], [-1.2, 0xe9573f]].forEach(([z, c]) => cyl(0.13, 0.13, 0.32, c, -4.85, 2.4, z));
+  // counter A along left wall
+  const cTop = 0xf3efe8, cBody = 0x3fa7a0;
+  rbox(1.4, 0.85, 7, cBody, -4.25, 0.45, -0.6, 0.1);
+  rbox(1.5, 0.1, 7.1, cTop, -4.25, 0.92, -0.6, 0.05);
+  // cutting board + veg
+  rbox(0.8, 0.06, 1.1, 0xd9a066, -4.15, 1.0, -3.2, 0.03);
+  sph(0.14, 0xe9573f, -4.05, 1.12, -3.4); sph(0.12, 0xe9573f, -4.25, 1.11, -3.05); sph(0.1, 0x7ccb6b, -4.0, 1.09, -2.85).scale.set(1, 0.7, 1);
+  const knife = rbox(0.06, 0.03, 0.5, 0xc7ccd6, -4.45, 1.05, -3.2, 0.01, scene, { m: 0.6, r: 0.3 });
+  // stove
+  rbox(1.2, 0.08, 1.4, 0x3a3a48, -4.2, 1.0, -0.9, 0.04);
+  const pot = cyl(0.36, 0.33, 0.42, 0x9aa3b5, -4.2, 1.25, -0.9, scene, { m: 0.6, r: 0.35 });
+  cyl(0.32, 0.32, 0.03, 0xf4d58d, -4.2, 1.45, -0.9);
+  [[0, 1.75, 0, 0.11], [0.1, 1.98, -0.05, 0.09], [-0.05, 2.18, 0.05, 0.07]].forEach(([a, y, b, r]) => sph(r, 0xffffff, -4.2 + a, y, -0.9 + b, scene, { t: true, o: 0.75 }));
+  // stove highlight ring
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.035, 12, 60), mat(0xffc233, { e: 0xffc233, ei: 0.8 }));
+  ring.rotation.x = Math.PI / 2; ring.position.set(-4.2, 1.06, -0.9); add(ring, scene, false, false);
+  // oven
+  rbox(1.4, 1.5, 1.4, 0x2e2e3a, -4.25, 0.75, 1.9, 0.1);
+  rbox(0.06, 0.6, 0.9, 0xff9f43, -3.52, 0.85, 1.9, 0.03, scene, { e: 0xff8a1f, ei: 0.9 });
+  rbox(0.08, 0.06, 0.7, 0xc7ccd6, -3.5, 1.3, 1.9, 0.02, scene, { m: 0.6 });
+  // counter B along right wall
+  rbox(6.4, 0.85, 1.4, cBody, 0.9, 0.45, -4.25, 0.1);
+  rbox(6.5, 0.1, 1.5, cTop, 0.9, 0.92, -4.25, 0.05);
+  // sink
+  rbox(1.5, 0.12, 1.0, 0xc7ccd6, -1.0, 0.95, -4.25, 0.06, scene, { m: 0.5, r: 0.3 });
+  rbox(1.3, 0.05, 0.8, 0x9fd8ef, -1.0, 1.0, -4.25, 0.03, scene, { r: 0.2 });
+  plate(-1.25, 1.02, -4.2, scene, true); plate(-0.8, 1.05, -4.3, scene, true);
+  cap(0.04, 0.4, 0xc7ccd6, -1.0, 1.25, -4.75, scene, { m: 0.6 });
+  // clean plates
+  for (let i = 0; i < 2; i++) plate(0.9, 0.98 + i * 0.05, -4.2);
+  // pass ready dish + bell
+  pizza(3.0, 1.0, -4.3, scene, 1.1); plate(3.0, 0.97, -4.3);
+  const bell = new THREE.Mesh(new THREE.SphereGeometry(0.17, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), mat(0xffc233, { m: 0.5, r: 0.3 }));
+  bell.position.set(3.9, 0.98, -3.9); add(bell); cyl(0.2, 0.2, 0.03, 0xc98f00, 3.9, 0.98, -3.9); sph(0.04, 0xc98f00, 3.9, 1.17, -3.9);
+  // island
+  rbox(2.2, 0.85, 1.6, 0xe0b25a, 0.9, 0.45, 0.9, 0.12);
+  rbox(2.3, 0.1, 1.7, cTop, 0.9, 0.92, 0.9, 0.05);
+  const bowl = cyl(0.3, 0.2, 0.18, 0xffffff, 0.3, 1.06, 0.8);
+  sph(0.11, 0xe9573f, 0.22, 1.17, 0.78); sph(0.11, 0xe9573f, 0.38, 1.17, 0.84);
+  const cheese = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.28, 0.18, 3), mat(0xffd45c)); cheese.position.set(1.1, 1.06, 0.6); cheese.rotation.y = 0.4; add(cheese);
+  sph(0.2, 0xf3d28b, 1.4, 1.08, 1.2).scale.set(1, 0.6, 1);
+  // chef
+  const chef = person({ shirt: 0xffffff, pants: 0x3b3355, skin: 0xf2c29b, hair: 0x6b4226, chefHat: true, scarf: 0xe9573f });
+  chef.position.set(-2.75, 0, -0.9); chef.rotation.y = -Math.PI / 2 + 0.5; scene.add(chef);
+  // plant
+  cyl(0.25, 0.2, 0.4, 0xc9432a, 4.3, 0.2, 2.5); sph(0.38, 0x5baf4e, 4.3, 0.7, 2.5);
+  anchor('board', -4.15, 1.4, -3.2); anchor('stove', -4.2, 2.4, -0.9); anchor('oven', -4.25, 1.7, 1.9);
+  anchor('sink', -1.0, 1.6, -4.25); anchor('pass', 3.0, 2.6, -4.6); anchor('plates', 0.9, 1.4, -4.2); anchor('chef', -2.75, 2.2, -0.9);
+}
+
+if (sceneName === 'dining') {
+  const floorTex = canvasTex(512, 512, (c, w, h) => {
+    const n = 8, s = w / n;
+    const cols = ['#e8c391', '#e2b983', '#ecc99a', '#ddb27b'];
+    for (let i = 0; i < n; i++) { c.fillStyle = cols[i % 4]; c.fillRect(i * s, 0, s, h); }
+    c.strokeStyle = 'rgba(120,80,40,0.25)'; c.lineWidth = 3;
+    for (let i = 0; i <= n; i++) { c.beginPath(); c.moveTo(i * s, 0); c.lineTo(i * s, h); c.stroke(); }
+    for (let i = 0; i < n; i++) { const y = ((i * 97) % h); c.beginPath(); c.moveTo(i * s, y); c.lineTo((i + 1) * s, y); c.stroke(); }
+  });
+  room(floorTex, 0xcdebd9, 0xbfe3cd, 0xf3d9a6, null);
+  // pass window in left wall: opening region (simulate with warm panel + ledge)
+  rbox(0.06, 1.2, 1.8, 0xffe6a8, -4.97, 1.75, -2.6, 0.02, scene, { e: 0xffd27a, ei: 0.4 });
+  rbox(0.2, 0.12, 2.0, 0xffffff, -4.95, 2.4, -2.6, 0.03); rbox(0.2, 0.12, 2.0, 0xffffff, -4.95, 1.12, -2.6, 0.03);
+  rbox(0.9, 0.12, 2.0, 0xd9a066, -4.6, 1.1, -2.6, 0.04);
+  plate(-4.55, 1.16, -2.6); spaghetti(-4.55, 1.16, -2.6);
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.38, 0.03, 12, 50), mat(0xffc233, { e: 0xffc233, ei: 0.8 }));
+  ring.rotation.x = Math.PI / 2; ring.position.set(-4.55, 1.2, -2.6); add(ring, scene, false, false);
+  // windows on right wall
+  [[-1.5], [1.5]].forEach(([x]) => { rbox(1.6, 1.3, 0.06, 0xe6f6ff, x, 1.85, -4.98, 0.03, scene, { e: 0xcfeeff, ei: 0.3 }); rbox(1.75, 0.1, 0.12, 0xffffff, x, 1.18, -4.95, 0.03); });
+  // door
+  rbox(1.3, 2.2, 0.1, 0x8b5a3c, 3.7, 1.1, -4.97, 0.05); sph(0.06, 0xffc233, 3.25, 1.1, -4.9, scene, { m: 0.6 });
+  // tables
+  const tableDefs = [
+    { name: 'merah', x: -1.6, z: -1.2, top: 0xef6b57, cloth: 0xc9432a },
+    { name: 'biru', x: 1.9, z: -1.6, top: 0x5b9bf0, cloth: 0x1f6fd1 },
+    { name: 'kuning', x: -2.0, z: 2.4, top: 0xffd45c, cloth: 0xe0a800 },
+    { name: 'hijau', x: 1.6, z: 2.2, top: 0x6fd08c, cloth: 0x2e9e5b },
+  ];
+  const T = {};
+  tableDefs.forEach(t => {
+    cyl(0.82, 0.92, 0.72, t.cloth, t.x, 0.36, t.z);
+    cyl(0.86, 0.86, 0.06, t.top, t.x, 0.75, t.z);
+    T[t.name] = t;
+    anchor('table_' + t.name, t.x, 0.8, t.z);
+  });
+  function chair(x, z, rot, color = 0xd9a066) {
+    const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = rot; scene.add(g);
+    rbox(0.55, 0.1, 0.55, color, 0, 0.45, 0, 0.04, g);
+    rbox(0.55, 0.6, 0.1, color, 0, 0.8, -0.25, 0.04, g);
+    [[-0.22, -0.22], [0.22, -0.22], [-0.22, 0.22], [0.22, 0.22]].forEach(([a, b]) => cyl(0.04, 0.04, 0.45, 0x8b5a3c, a, 0.22, b, g, {}, 12));
+    return g;
+  }
+  function guest(t, side, look) {
+    const ang = side; const r = 1.25;
+    const x = t.x + Math.sin(ang) * r, z = t.z + Math.cos(ang) * r;
+    chair(x, z, ang + Math.PI);
+    if (!look) return null;
+    const p = person({ ...look, seated: true });
+    p.position.set(x, 0.12, z); p.rotation.y = ang + Math.PI; scene.add(p);
+    return [x, z];
+  }
+  // merah: waiting for pizza
+  const gm = guest(T.merah, Math.PI / 2, { shirt: 0x7e5bd6, skin: 0xf2c29b, hair: 0x6b4226 });
+  guest(T.merah, -Math.PI / 2, null);
+  anchor('guest_merah', gm[0], 2.15, gm[1]);
+  // biru: wants to order
+  const gb = guest(T.biru, Math.PI / 2, { shirt: 0xe07b12, skin: 0xc68a5e, hair: 0x2b2340 });
+  guest(T.biru, -Math.PI / 2 + 0.3, null);
+  anchor('guest_biru', gb[0], 2.15, gb[1]);
+  // kuning: dirty
+  guest(T.kuning, Math.PI / 2, null); guest(T.kuning, -Math.PI / 2, null);
+  plate(T.kuning.x - 0.25, 0.78, T.kuning.z, scene, true); plate(T.kuning.x + 0.3, 0.78, T.kuning.z + 0.2, scene, true);
+  cyl(0.06, 0.05, 0.18, 0xe6f6ff, T.kuning.x + 0.1, 0.87, T.kuning.z - 0.35, scene, { t: true, o: 0.7 });
+  anchor('dirty_kuning', T.kuning.x, 1.6, T.kuning.z);
+  // hijau: eating happily
+  const gh1 = guest(T.hijau, Math.PI / 2, { shirt: 0xe9573f, skin: 0xf2c29b, hair: 0xe0a800 });
+  const gh2 = guest(T.hijau, -Math.PI / 2, { shirt: 0x22a06b, skin: 0x8d5a3b, hair: 0x2b2340 });
+  plate(T.hijau.x + 0.35, 0.78, T.hijau.z); pizza(T.hijau.x + 0.35, 0.81, T.hijau.z, scene, 0.8);
+  plate(T.hijau.x - 0.35, 0.78, T.hijau.z); pizza(T.hijau.x - 0.35, 0.81, T.hijau.z, scene, 0.8);
+  anchor('guest_hijau', gh1[0], 2.15, gh1[1]);
+  // waiting guest at door
+  const wg = person({ shirt: 0x5b9bf0, pants: 0x3b3355, skin: 0xf2c29b, hair: 0xb0b6c3 });
+  wg.position.set(3.7, 0, -3.6); wg.rotation.y = -0.3; scene.add(wg);
+  anchor('door_guest', 3.7, 2.35, -3.6);
+  // waiter carrying pizza
+  const waiter = person({ shirt: 0xffd45c, pants: 0x3b3355, skin: 0x8d5a3b, hair: 0x2b2340, apron: 0x1f6fd1, armUp: true });
+  waiter.position.set(-3.3, 0, -0.4); waiter.rotation.y = 1.75; scene.add(waiter);
+  const tray = cyl(0.3, 0.3, 0.04, 0xc7ccd6, 0, 0, 0, scene, { m: 0.5, r: 0.3 });
+  const wp = new THREE.Vector3(0.42, 1.62, 0.1).applyEuler(waiter.rotation).add(waiter.position);
+  tray.position.copy(wp); pizza(wp.x, wp.y + 0.02, wp.z, scene, 1.0);
+  anchor('waiter', -3.3, 2.3, -0.4);
+  // path hint: dots from waiter to merah table
+  const a = new THREE.Vector3(-3.0, 0.03, -0.45), b = new THREE.Vector3(T.merah.x - 1.0, 0.03, T.merah.z + 0.5);
+  for (let i = 1; i <= 3; i++) { const p = a.clone().lerp(b, i / 4); const d = cyl(0.07, 0.07, 0.02, 0xffffff, p.x, 0.02, p.z, scene, { e: 0xffffff, ei: 0.4 }, 20); d.castShadow = false; }
+  const hl = new THREE.Mesh(new THREE.TorusGeometry(1.25, 0.05, 12, 80), mat(0xffc233, { e: 0xffc233, ei: 0.8 }));
+  hl.rotation.x = Math.PI / 2; hl.position.set(T.merah.x, 0.04, T.merah.z); add(hl, scene, false, false);
+  // plants
+  cyl(0.28, 0.22, 0.45, 0xc9432a, -4.3, 0.22, 4.2); sph(0.45, 0x5baf4e, -4.3, 0.8, 4.2);
+  cyl(0.28, 0.22, 0.45, 0xffffff, 4.4, 0.22, 1.0); sph(0.45, 0x3f8f3a, 4.4, 0.8, 1.0);
+  anchor('ledge', -4.55, 1.9, -2.6);
+}
+
+if (sceneName === 'cafe') {
+  sun.shadow.camera.left = -7; sun.shadow.camera.right = 7; sun.shadow.camera.top = 7; sun.shadow.camera.bottom = -7;
+  rbox(8, 0.4, 8, 0x7ccb6b, 0, -0.2, 0, 0.18);
+  rbox(1.0, 0.05, 3.2, 0xebddbf, 0.4, 0.02, 2.4, 0.03);
+  // building
+  rbox(3.6, 2.4, 3.2, 0xf3e3c7, -0.2, 1.2, -0.4, 0.12);
+  rbox(3.8, 0.25, 3.4, 0xd9a066, -0.2, 0.12, -0.4, 0.08);
+  const roof = new THREE.Mesh(new THREE.ConeGeometry(2.6, 1.4, 4, 1), mat(0xe9573f));
+  roof.position.set(-0.2, 3.15, -0.4); roof.rotation.y = Math.PI / 4; roof.scale.set(1, 1, 0.9); add(roof);
+  // awning stripes on front (z+)
+  const stripes = canvasTex(256, 64, (c, w, h) => { for (let i = 0; i < 8; i++) { c.fillStyle = i % 2 ? '#ffffff' : '#e9573f'; c.fillRect(i * w / 8, 0, w / 8, h); } });
+  const aw = rbox(3.4, 0.08, 0.8, 0xffffff, -0.2, 2.05, 1.5, 0.03, scene, { map: stripes }); aw.rotation.x = 0.35;
+  const aw2 = rbox(0.8, 0.08, 2.8, 0xffffff, 1.95, 2.05, -0.4, 0.03, scene, { map: stripes }); aw2.rotation.z = -0.35;
+  // windows, door
+  rbox(1.3, 0.9, 0.06, 0x8fd3f4, -1.0, 1.35, 1.22, 0.04, scene, { e: 0xbfe9ff, ei: 0.3 });
+  rbox(0.9, 1.5, 0.08, 0x8b5a3c, 0.7, 0.95, 1.22, 0.05);
+  rbox(0.06, 0.9, 1.3, 0x8fd3f4, 1.62, 1.35, -0.4, 0.04, scene, { e: 0xbfe9ff, ei: 0.3 });
+    // globe sign
+  cyl(0.04, 0.04, 0.6, 0x6b5a4a, -0.2, 4.1, -0.4);
+  sph(0.38, 0x2f7dc1, -0.2, 4.5, -0.4);
+  sph(0.16, 0x7ccb6b, -0.08, 4.6, -0.1).scale.set(1.2, 0.8, 0.6);
+  sph(0.12, 0x7ccb6b, -0.4, 4.35, -0.15).scale.set(1, 0.8, 0.6);
+  // trees
+  [[-3.0, 2.6, 0.55], [2.9, -2.6, 0.6], [-3.1, -2.8, 0.5]].forEach(([x, z, r]) => { cyl(0.1, 0.12, 0.6, 0x8b5a3c, x, 0.3, z); sph(r, 0x5baf4e, x, 0.95, z); sph(r * 0.7, 0x6fc25e, x + 0.15, 1.35, z + 0.1); });
+  // umbrella table
+  cyl(0.45, 0.45, 0.06, 0xffffff, 2.4, 0.7, 2.2); cyl(0.05, 0.05, 0.7, 0x8b5a3c, 2.4, 0.35, 2.2, scene, {}, 12);
+  cyl(0.04, 0.04, 1.2, 0x8b5a3c, 2.4, 1.2, 2.2, scene, {}, 12);
+  const umb = new THREE.Mesh(new THREE.ConeGeometry(0.95, 0.4, 8, 1, true), mat(0xe9573f)); umb.position.set(2.4, 1.85, 2.2); add(umb);
+  [[1.8, 2.2], [3.0, 2.2]].forEach(([x, z]) => { rbox(0.4, 0.06, 0.4, 0x2f7dc1, x, 0.42, z, 0.03); cyl(0.03, 0.03, 0.4, 0x8b5a3c, x, 0.2, z, scene, {}, 10); });
+  // flowers
+  [[-1.6, 1.6], [-1.2, 1.7], [-0.6, 1.6]].forEach(([x, z], i) => sph(0.16, [0xff7aa8, 0xffc233, 0xff7aa8][i], x, 0.15, z));
+}
+
+
+if (sceneName === 'worldmap') {
+  const geo = await (await fetch('./geo.json')).json();
+  camera = new THREE.PerspectiveCamera(+(params.get('fov') || 26), aspect, 0.1, 200);
+  camera.position.set(0, +(params.get('cy') || 17), +(params.get('cz') || 12.5));
+  camera.lookAt(0, 0, +(params.get('lz') || 0.9));
+  camera.updateMatrixWorld();
+  Object.assign(sun.shadow.camera, { left: -13, right: 13, top: 13, bottom: -13 });
+  sun.shadow.camera.updateProjectionMatrix();
+  sun.position.set(6, 14, 8);
+  const waves = canvasTex(512, 512, (c, w, h) => {
+    c.fillStyle = '#5ebbe3'; c.fillRect(0, 0, w, h);
+    c.strokeStyle = 'rgba(255,255,255,0.18)'; c.lineWidth = 4; c.lineCap = 'round';
+    for (let i = 0; i < 26; i++) { const x = (i * 197) % w, y = (i * 131) % h; c.beginPath(); c.moveTo(x, y); c.quadraticCurveTo(x + 14, y - 10, x + 28, y); c.quadraticCurveTo(x + 42, y + 10, x + 56, y); c.stroke(); }
+  }, [5, 3]);
+  rbox(26, 0.4, 22, 0xffffff, 0, -0.2, -3, 0.2, scene, { map: waves, r: 0.5 });
+  const order = ['us', 'it', 'mx', 'fr', 'jp', 'ar', 'au', 'tr', 'kr', 'sa', 'cn', 'ng', 'th', 'in', 'id'];
+  const status = Object.fromEntries(order.map((c, i) => [c, i < 4 ? 'done' : i === 4 ? 'current' : c === 'id' ? 'final' : 'locked']));
+  const colors = { done: 0xffd45c, current: 0x5b9bf0, locked: 0xe4ecd9, final: 0xffb08a };
+  const greens = [0x8fd06b, 0x84c862, 0x9ad874, 0x7fc15d];
+  let gi = 0;
+  for (const p of geo.polys) {
+    const shape = new THREE.Shape(p.rings[0].map(([x, y]) => new THREE.Vector2(x, -y)));
+    for (let k = 1; k < p.rings.length; k++) shape.holes.push(new THREE.Path(p.rings[k].map(([x, y]) => new THREE.Vector2(x, -y))));
+    const hi = p.code && status[p.code];
+    const depth = hi ? 0.2 : 0.1;
+    const g = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled: true, bevelThickness: 0.025, bevelSize: 0.012, bevelSegments: 2, curveSegments: 1 });
+    const color = hi ? colors[status[p.code]] : greens[(gi++) % greens.length];
+    const m = new THREE.Mesh(g, mat(color, { r: 0.8 }));
+    m.rotation.x = -Math.PI / 2; m.position.y = 0.0;
+    add(m);
+  }
+  // route arcs
+  const P = Object.fromEntries(Object.entries(geo.pins).map(([k, [x, y]]) => [k, new THREE.Vector3(x, 0.24, y)]));
+  for (let i = 0; i < 5; i++) {
+    const a = P[order[i]], b = P[order[i + 1]];
+    const d = a.distanceTo(b);
+    const mid = a.clone().lerp(b, 0.5); mid.y = 0.45 + d * 0.07;
+    const curve = new THREE.QuadraticBezierCurve3(a.clone().setY(0.5), mid, b.clone().setY(0.5));
+    if (i < 4) {
+      add(new THREE.Mesh(new THREE.TubeGeometry(curve, 80, 0.02, 10), mat(0xffc233, { e: 0xffb000, ei: 0.25, t: true, o: 0.75 })), scene, true, false);
+    } else {
+      const n = Math.max(6, Math.round(d * 5));
+      for (let k = 1; k < n; k++) { const q = curve.getPoint(k / n); sph(0.032, 0xffffff, q.x, q.y, q.z, scene, { e: 0xffffff, ei: 0.3 }); }
+    }
+  }
+  // plane on current leg (fr -> in)
+  {
+    const a = P.jp, b = P.ar, d = a.distanceTo(b), mid = a.clone().lerp(b, 0.5); mid.y = 0.45 + d * 0.07;
+    const curve = new THREE.QuadraticBezierCurve3(a.clone().setY(0.5), mid, b.clone().setY(0.5));
+    const q = curve.getPoint(0.18), t = curve.getTangent(0.18);
+    const plane = new THREE.Group(); plane.position.copy(q); scene.add(plane);
+    cap(0.05, 0.22, 0xffffff, 0, 0, 0, plane).rotation.z = Math.PI / 2;
+    rbox(0.08, 0.015, 0.36, 0x1f6fd1, 0, 0, 0, 0.007, plane);
+    rbox(0.05, 0.1, 0.012, 0x1f6fd1, -0.12, 0.05, 0, 0.005, plane);
+    plane.lookAt(q.clone().add(new THREE.Vector3(t.z, 0, -t.x))); plane.rotateY(Math.PI / 2);
+  }
+  // pins
+  for (const code of order) {
+    const st = status[code]; const p = P[code];
+    const big = st === 'current' || st === 'final';
+    const h = big ? 0.75 : 0.5;
+    cyl(0.07, 0.09, 0.05, 0xffffff, p.x, 0.25, p.z);
+    cyl(0.025, 0.025, h, 0xffffff, p.x, 0.25 + h / 2, p.z, scene, {}, 12);
+    const headC = { done: 0xffc233, current: 0x1f6fd1, locked: 0xc9cfd8, final: 0xe00000 }[st];
+    const r = big ? 0.2 : 0.14;
+    sph(r, headC, p.x, 0.25 + h + r * 0.6, p.z, scene, { r: 0.35 });
+    if (st === 'current') {
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.4, 0.03, 12, 50), mat(0x1f6fd1, { e: 0x5b9bf0, ei: 0.6 }));
+      ring.rotation.x = Math.PI / 2; ring.position.set(p.x, 0.26, p.z); add(ring, scene, false, false);
+    }
+    if (st === 'final') {
+      const cy0 = 0.25 + h + r * 1.5;
+      cyl(0.13, 0.13, 0.06, 0xffc233, p.x, cy0, p.z, scene, { m: 0.4, r: 0.3 });
+      for (let k = 0; k < 5; k++) { const an = k / 5 * Math.PI * 2; const c = new THREE.Mesh(new THREE.ConeGeometry(0.04, 0.12, 12), mat(0xffc233, { m: 0.4, r: 0.3 })); c.position.set(p.x + Math.cos(an) * 0.1, cy0 + 0.08, p.z + Math.sin(an) * 0.1); add(c); }
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.45, 0.03, 12, 50), mat(0xffc233, { e: 0xffc233, ei: 0.6 }));
+      ring.rotation.x = Math.PI / 2; ring.position.set(p.x, 0.26, p.z); add(ring, scene, false, false);
+    }
+    anchor('pin_' + code, p.x, 0.25 + h + r * 2.4 + (st === 'final' ? 0.2 : 0), p.z);
+    anchor('base_' + code, p.x, 0.25, p.z);
+  }
+  // clouds
+  [[-8.5, -3.5], [-2.5, 2.8], [3.5, 3.8], [9, -3.2], [-6.5, 3.5], [2.5, -4.6]].forEach(([x, z], i) => {
+    const y = 1.6 + (i % 2) * 0.3;
+    [[0, 0, 0.32], [0.3, 0.05, 0.25], [-0.3, 0.02, 0.24], [0.1, 0.18, 0.22]].forEach(([a, b, r]) => sph(r, 0xffffff, x + a, y + b, z, scene, { r: 0.9 }).scale.set(1, 0.7, 0.8));
+  });
+  // boats
+  [[-3.2, 0.4, 0.6], [3.4, 2.2, -0.4], [-9.6, 1.2, 1.2]].forEach(([x, z, ry]) => {
+    const b = new THREE.Group(); b.position.set(x, 0.02, z); b.rotation.y = ry; scene.add(b);
+    rbox(0.42, 0.1, 0.16, 0xc9432a, 0, 0.05, 0, 0.04, b); rbox(0.18, 0.1, 0.12, 0xffffff, -0.04, 0.14, 0, 0.03, b);
+  });
+}
+
+renderer.render(scene, camera);
+window.__anchors = anchors;
+window.__done = true;
+</script>
+</body>
+</html>
