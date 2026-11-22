@@ -16,7 +16,7 @@ publik**, serta library open-source berlisensi permisif (MIT/BSD/Apache/ISC).
 | Ikon aplikasi (PWA) | Digambar sendiri (`public/icons/icon.svg`), PNG dibuat `tools/make-icons.mjs` | Milik proyek | |
 | Semua efek suara & musik | Disintesis dengan Web Audio API (`src/engine/audio.ts`) | Milik proyek | Tanpa file audio |
 | Tekstur lantai, garis kanopi | Digambar di canvas saat runtime | Milik proyek | |
-| Data peta dunia (Tahap 4) | npm `world-atlas` (Natural Earth) | Domain publik | Diproses saat build |
+| Data peta dunia | npm `world-atlas` 2.0.2 (data Natural Earth 1:50m; paket berlisensi ISC) | Data: domain publik (Natural Earth) | Diproses saat build oleh `tools/build-map.mjs` menjadi `public/map/world.bin` |
 
 ## Library (kode)
 
@@ -27,6 +27,7 @@ publik**, serta library open-source berlisensi permisif (MIT/BSD/Apache/ISC).
 | Vite, vite-plugin-pwa, Workbox | MIT |
 | Vitest, TypeScript | MIT / Apache-2.0 |
 | Wrangler, @cloudflare/workers-types (alat server) | MIT / Apache-2.0 |
+| d3-geo, d3-geo-projection, topojson-client, topojson-simplify (alat build peta) | ISC |
 
 ## Sistem ganti model (GLB)
 

@@ -2,6 +2,17 @@
 
 Format: versi · tanggal · ringkasan. Nomor versi tampil di Pengaturan.
 
+## 0.4.0 · 2026-11-22 · Tahap 4 — Peta Dunia 3D + simpanan
+
+- **Peta Dunia 3D sungguhan** dari data Natural Earth (`world-atlas`), proyeksi Natural Earth 1, dipotong di garis tanggal internasional, tanpa Antartika. Diproses saat build (`tools/build-map.mjs`) menjadi file biner ±355 KB: satu mesh daratan (hijau bervariasi) + satu mesh 15 negara level.
+- Warna negara per status (kuning = sudah dimainkan, biru = sekarang, abu-abu = terkunci, oranye = Indonesia); pin emas/biru bercincin/abu-abu/merah bermahkota; jalur busur emas + satu rute titik-titik dengan pesawat; awan dan kapal bergerak.
+- Geser, pinch-zoom (dan roda tetikus), ketuk pin -> kamera terbang mendekat + kartu level (nama kafe, bintang terbaik, menu, "Main!"/"Main lagi"). Label dengan nomor, nama, bintang, gembok; ringkas saat diperkecil supaya Eropa tetap mudah diketuk.
+- Header peta: kembali, "Tersimpan otomatis", total bintang, koin tim, Hias Kafe (Tahap 5).
+- Peta bisa dibuka dari Layar Judul dan dari layar Ruangan (memilih level untuk dimainkan berdua).
+- **Simpanan berversi (v2)** di IndexedDB + cermin localStorage, dengan migrasi dari simpanan Tahap 1–3. Bintang terbaik tidak pernah turun.
+- **Kode Keluarga** (`KAFE-XXXX-XXXX`, acak dari 31 karakter): simpanan dicadangkan otomatis ke Durable Object `KafeBackup`. Pengaturan menampilkan kode + tombol salin, dan bisa memulihkan simpanan di HP baru.
+- Kartu petunjuk tutorial tidak lagi menghalangi ketukan di layar HP kecil.
+
 ## 0.3.0 · 2026-11-22 · Tahap 3 — isi level 1–5
 
 - Level 2–5 bisa dimainkan: **Italia** (pizza, spaghetti), **Meksiko** (taco, nachos), **Prancis** (croissant, crêpes), **Jepang** (sushi, ramen). Level 3–5: 3 meja, rombongan 1–2 tamu.

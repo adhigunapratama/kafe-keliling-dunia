@@ -130,6 +130,17 @@ try {
   ok(r2.code !== code, 'ruangan baru mendapat kode lain');
 
   waiter2.close(); chefB.close();
+
+  // Kode Keluarga (cadangan simpanan)
+  const fam = 'KAFE-' + Math.random().toString(36).slice(2, 6).toUpperCase().replace(/[01IOL]/g, '7') + '-AB2C';
+  const g0 = await fetch(base + '/backup/' + fam);
+  ok(g0.status === 404, 'cadangan belum ada -> 404');
+  const put = await fetch(base + '/backup/' + fam, { method: 'PUT', headers: { 'Content-Type': 'application/json', Origin: 'https://cafe-abangade.pages.dev' }, body: JSON.stringify({ v: 2, coins: 120, best: { 1: 3 } }) });
+  ok(put.ok && put.headers.get('access-control-allow-origin') === 'https://cafe-abangade.pages.dev', 'cadangan disimpan (CORS ok)');
+  const g1 = await (await fetch(base + '/backup/' + fam)).json();
+  ok(g1.coins === 120 && g1.best['1'] === 3, 'cadangan bisa dipulihkan');
+  ok((await fetch(base + '/backup/KAFE-1234')).status === 400, 'kode keluarga tidak valid ditolak');
+  ok((await fetch(base + '/backup/' + fam, { method: 'PUT', body: 'x'.repeat(70000) })).status === 413, 'cadangan terlalu besar ditolak');
 } catch (e) {
   failed++;
   console.error(e);

@@ -4,6 +4,7 @@ import { setNarration } from '../engine/speech';
 import type { Preset } from '../engine/quality';
 import { settings } from './settings';
 import { useStore } from './store';
+import { FamilyCodeSection } from './FamilyCode';
 import { IconBtn, Modal, Segmented, Toggle } from './components';
 
 declare const __APP_VERSION__: string;
@@ -39,6 +40,7 @@ export function SettingsModal({ onClose }: { onClose: () => void }) {
         <Toggle label={t('settings.narration')} on={s.narration} onChange={(v) => { settings.update({ narration: v }); setNarration(v); }} />
         <Toggle label={t('settings.guide')} on={s.guide} onChange={(v) => settings.update({ guide: v })} />
         <Toggle label={t('settings.fps')} on={s.showFps} onChange={(v) => settings.update({ showFps: v })} />
+        <FamilyCodeSection />
         <p class="version">{t('settings.version', { v: __APP_VERSION__ })}</p>
       </div>
     </Modal>

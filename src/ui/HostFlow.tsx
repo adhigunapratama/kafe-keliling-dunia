@@ -17,6 +17,7 @@ import { ResultScreen } from './ResultScreen';
 import { SettingsModal } from './SettingsModal';
 import { NetBanner, WaitingOverlay } from './netUi';
 import { useWakeLock } from './wakeLock';
+import { WorldMapScreen } from './WorldMapScreen';
 
 /** Alur di HP Koki: buat ruangan -> layar Ruangan & Pilih Peran -> main -> hasil. */
 export function HostFlow({ level, onExit }: { level: number; onExit: () => void }) {
@@ -75,12 +76,14 @@ function RoomLobby({ host, onExit }: { host: RoomHost; onExit: () => void }) {
   const L = getLevel(room.level);
   const c = getCountry(L.country);
   const peer = net.peer;
+  const [map, setMap] = useState(false);
+  if (map) return <WorldMapScreen onBack={() => setMap(false)} onPlay={(lv) => { host.setLobby({ level: lv }); setMap(false); }} />;
   return (
     <div class="screen lobby-screen">
       <div class="lobby-top">
         <IconBtn icon="back" label={t('common.back')} onClick={onExit} />
         <h1>{t('room.title')}</h1>
-        <span class="pill"><Flag code={c.flag} /> {t('room.level', { n: L.id, country: t(`country.${c.id}`) })}</span>
+        <Btn class="pill-btn" onClick={() => setMap(true)}><Flag code={c.flag} /> {t('room.level', { n: L.id, country: t(`country.${c.id}`) })} <Icon name="globe" /></Btn>
       </div>
       <NetBanner net={net} />
       <div class="lobby-main">

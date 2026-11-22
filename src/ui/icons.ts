@@ -41,6 +41,7 @@ export const ICONS = {
   guest: wrap('<circle cx="24" cy="17" r="10" fill="#F2C29B"/><path d="M14 15c0-6 4-10 10-10s10 4 10 10c-3-2-6-3-10-3s-7 1-10 3z" fill="#6B4226"/><path d="M9 43c0-9 7-14 15-14s15 5 15 14z" fill="#5B9BF0"/>'),
   chefHat: wrap('<path d="M14 26c-5 0-8-4-8-8s4-8 8-7c1-4 5-7 10-7s9 3 10 7c4-1 8 3 8 7s-3 8-8 8z" fill="#fff"/><path d="M14 26h20v12H14z" fill="#fff"/><path d="M14 32h20" stroke-width="3"/>'),
   tray: wrap('<path d="M10 30c0-9 6-16 14-16s14 7 14 16z" fill="#E6E9F0"/><path d="M5 32h38" stroke-width="5"/><circle cx="24" cy="11" r="3" fill="#E6E9F0"/>'),
+  globe: wrap('<circle cx="24" cy="24" r="18" fill="#5EBBE3"/><path d="M14 14c4 2 6 6 4 10s2 8 6 8 4 6 2 8M30 8c-2 4 0 8 4 8s6 4 4 8" stroke="#2E9E5B" stroke-width="4" fill="none"/><path d="M12 20c3-1 6 1 7 4M28 30c3 0 6 2 7 5" stroke="#7CCB6B" stroke-width="5" fill="none"/>'),
   fps: wrap('<path d="M8 36l10-12 8 6 14-18" stroke-width="5"/>'),
 } as const;
 export type IconName = keyof typeof ICONS;

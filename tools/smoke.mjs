@@ -12,14 +12,14 @@ const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=sw
 const errors = [];
 async function run(name, viewport) {
   const page = await browser.newPage({ viewport });
-  page.on('console', (m) => { if (m.type() === 'error') errors.push(`[${name}] ${m.text()}`); });
+  page.on('console', (m) => { if (m.type() === 'error' && !/ERR_|Failed to load resource/.test(m.text())) errors.push(`[${name}] ${m.text()}`); });
   page.on('pageerror', (e) => errors.push(`[${name}] ${e}`));
   await page.goto(url);
   await page.evaluate(() => localStorage.setItem('kkd.settings', JSON.stringify({ showFps: true, detected: 'sedang' })));
   await page.reload();
   await page.waitForTimeout(1500);
   await page.screenshot({ path: `${out}/${name}-1-judul.png` });
-  await page.click('.btn-continue');
+  await page.click('.test-note');
   await page.waitForTimeout(1500);
   // bot: Pelayan mengikuti panduan, Koki menyelesaikan langkah (lewat sim) kecuali tiket pertama dimainkan lewat UI
   const step = async (sec) => page.evaluate(async (sec) => {

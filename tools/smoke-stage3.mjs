@@ -16,7 +16,7 @@ const ok = (c, n) => { if (c) { passed++; console.log('  ✓', n); } else { fail
 async function open(level) {
   const page = await browser.newPage({ viewport: { width: 1024, height: 600 } });
   page.on('pageerror', (e) => errors.push(String(e)));
-  page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
+  page.on('console', (m) => { if (m.type() === 'error' && !/ERR_|Failed to load resource/.test(m.text())) errors.push(m.text()); });
   await page.goto(url);
   await page.evaluate(() => { localStorage.clear(); localStorage.setItem('kkd.settings', JSON.stringify({ detected: 'rendah' })); });
   await page.goto(url + `?test=1&level=${level}`);

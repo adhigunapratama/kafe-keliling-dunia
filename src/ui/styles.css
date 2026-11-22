@@ -485,11 +485,11 @@ h1, h2, h3 { font-family: var(--font-title); margin: 0; line-height: 1.05; }
 @keyframes stretch { 50% { transform: scaleX(1.12); } }
 
 /* ============ Tahap 3: tutorial ============ */
-.tut-card { position: absolute; left: 50%; top: calc(64px + var(--safe-t)); translate: -50% 0; z-index: 6; display: flex; align-items: center; gap: 10px; max-width: min(440px, 60%); padding: 8px 16px 8px 10px; background: #FFF6DA; border: 3px solid var(--ink); border-radius: 20px; box-shadow: 0 5px 0 var(--yellow-d); font-size: 16px; line-height: 1.2; animation: dropin .4s cubic-bezier(.3,1.5,.6,1); }
+.tut-card { pointer-events: none; position: absolute; left: 50%; top: calc(64px + var(--safe-t)); translate: -50% 0; z-index: 6; display: flex; align-items: center; gap: 10px; max-width: min(440px, 60%); padding: 8px 16px 8px 10px; background: #FFF6DA; border: 3px solid var(--ink); border-radius: 20px; box-shadow: 0 5px 0 var(--yellow-d); font-size: 16px; line-height: 1.2; animation: dropin .4s cubic-bezier(.3,1.5,.6,1); }
 .tut-card .icon { width: 36px; height: 36px; }
 .tut-card.done { background: var(--green-bg); color: var(--green); box-shadow: 0 5px 0 #9BD8B5; }
 .test-mode.mode-both .tut-card { top: calc(120px + var(--safe-t)); }
-.tut-icon { position: absolute; left: 50%; top: calc(8px + var(--safe-t)); translate: -50% 0; z-index: 6; display: flex; gap: 6px; padding: 8px 14px; background: #FFF6DA; border: 4px solid var(--ink); border-radius: 26px; box-shadow: 0 6px 0 var(--yellow-d); animation: dropin .4s cubic-bezier(.3,1.5,.6,1), bob 1.4s .4s infinite; }
+.tut-icon { pointer-events: none; position: absolute; left: 50%; top: calc(8px + var(--safe-t)); translate: -50% 0; z-index: 6; display: flex; gap: 6px; padding: 8px 14px; background: #FFF6DA; border: 4px solid var(--ink); border-radius: 26px; box-shadow: 0 6px 0 var(--yellow-d); animation: dropin .4s cubic-bezier(.3,1.5,.6,1), bob 1.4s .4s infinite; }
 .tut-icon .icon { width: 58px; height: 58px; }
 .tut-icon.done { background: var(--green-bg); box-shadow: 0 6px 0 #9BD8B5; }
 .tut-color { display: block; width: 58px; height: 58px; border-radius: 16px; border: 4px solid var(--ink); }
@@ -512,4 +512,61 @@ h1, h2, h3 { font-family: var(--font-title); margin: 0; line-height: 1.05; }
   .plates-card { padding: 6px 10px; }
   .bell-btn { padding: 8px 12px; font-size: 18px; }
   .tut-card { max-width: 70%; font-size: 14px; }
+}
+
+/* ============ Tahap 4: Kode Keluarga ============ */
+.family { border-top: 3px solid var(--panel2); padding-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+.family-head { display: flex; align-items: center; gap: 8px; }
+.family-head .icon { width: 26px; height: 26px; }
+.family-status { margin-left: auto; font-size: 12px; color: var(--text2); }
+.family-status.saved { color: var(--green); }
+.family-code-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.family-code { font-family: var(--font-title); font-size: 26px; letter-spacing: 2px; background: #FFF6DA; border: 3px dashed var(--yellow-d); border-radius: 14px; padding: 4px 12px; user-select: all; -webkit-user-select: all; }
+.family-restore { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.family-input { font: inherit; font-size: 18px; text-transform: uppercase; min-height: 52px; padding: 0 12px; border: 3px solid var(--ink); border-radius: 14px; width: 220px; user-select: text; -webkit-user-select: text; }
+.family-confirm { background: #FFE3DD; border-radius: 14px; padding: 8px 10px; display: flex; flex-direction: column; gap: 8px; }
+.family-confirm .row { display: flex; gap: 8px; }
+.family-msg.ok { color: var(--green); } .family-msg.err { color: var(--red); }
+
+/* ============ Tahap 4: Peta Dunia ============ */
+.map-screen { background: #5ebbe3; }
+.map-header { position: absolute; left: 0; right: 0; top: 0; z-index: 5; display: flex; align-items: center; gap: 10px; padding: calc(8px + var(--safe-t)) calc(10px + var(--safe-r)) 0 calc(10px + var(--safe-l)); flex-wrap: wrap; pointer-events: none; }
+.map-header > * { pointer-events: auto; }
+.map-header h1 { font-size: 30px; color: #fff; -webkit-text-stroke: 1.5px var(--ink); text-shadow: 0 3px 0 var(--ink); }
+.map-header .pill .icon { width: 24px; height: 24px; }
+.pill-saved { background: var(--green-bg); color: var(--green); border-color: var(--green); height: 38px; font-size: 14px; }
+.pill-saved .icon svg path { stroke: var(--green); }
+.map-card { position: absolute; right: calc(12px + var(--safe-r)); bottom: calc(12px + var(--safe-b)); z-index: 6; width: min(320px, 60vw); background: #fff; border: 4px solid var(--ink); border-radius: 26px; padding: 14px 14px 12px; box-shadow: 0 8px 0 rgba(43,35,64,.25); display: flex; flex-direction: column; gap: 8px; animation: popin .3s cubic-bezier(.3,1.4,.6,1); }
+.map-card-close { position: absolute; right: 8px; top: 8px; width: 48px; min-width: 48px; min-height: 48px; }
+.map-card-head { display: flex; gap: 10px; align-items: center; padding-right: 50px; }
+.map-card-head .flag { width: 48px; height: 32px; }
+.map-card-head b { display: block; font-family: var(--font-title); font-size: 24px; line-height: 1.05; }
+.map-card-head small { color: var(--text2); font-size: 14px; }
+.map-card-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.map-card-row small { color: var(--text2); }
+.map-menus { display: flex; gap: 4px; } .map-menus .food-icon { width: 44px; height: 44px; }
+.map-locked { display: flex; align-items: center; gap: 6px; color: var(--text2); background: var(--panel2); border-radius: 14px; padding: 10px; }
+.map-locked .icon { width: 26px; height: 26px; }
+.pin-label { translate: -50% -100%; display: flex; align-items: center; gap: 4px; padding: 3px 9px 3px 4px; background: #fff; border: 2.5px solid var(--ink); border-radius: 14px; font-size: 13px; white-space: nowrap; box-shadow: 0 3px 0 rgba(43,35,64,.25); }
+.pin-label.compact { padding: 2px 4px; gap: 2px; }
+.pin-label .pl-num { display: grid; place-items: center; min-width: 22px; height: 22px; border-radius: 11px; background: var(--ink); color: #fff; font-size: 12px; }
+.pin-label.st-done .pl-num { background: var(--yellow-d); }
+.pin-label.st-current { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(31,111,209,.35), 0 3px 0 rgba(43,35,64,.25); }
+.pin-label.st-current .pl-num { background: var(--blue); }
+.pin-label.st-final .pl-num { background: var(--red); }
+.pin-label.st-locked { background: #EEF1F4; color: #7A7590; }
+.pin-label.sel { background: #FFF6DA; scale: 1.1; }
+.pl-stars { display: inline-flex; gap: 1px; }
+.pl-stars i { width: 11px; height: 11px; background: #DAD5E8; clip-path: polygon(50% 0, 62% 35%, 100% 38%, 70% 60%, 80% 100%, 50% 77%, 20% 100%, 30% 60%, 0 38%, 38% 35%); }
+.pl-stars i.on { background: var(--yellow); }
+.pl-lock { width: 12px; height: 12px; border: 2.5px solid #7A7590; border-radius: 3px; position: relative; margin-top: 4px; }
+.pl-lock::before { content: ''; position: absolute; left: 1px; top: -8px; width: 6px; height: 6px; border: 2.5px solid #7A7590; border-bottom: 0; border-radius: 5px 5px 0 0; }
+.btn-map .icon { width: 30px; height: 30px; }
+.pill-btn { min-height: 48px; border-radius: 22px; font-size: 17px; }
+.pill-btn .icon { width: 26px; height: 26px; }
+@media (max-height: 460px) { .map-header h1 { font-size: 22px; } .map-card { padding: 10px; gap: 4px; } .map-card-head b { font-size: 19px; } }
+
+@media (max-height: 460px) {
+  .tut-card { left: calc(150px + var(--safe-l)); translate: 0 0; top: calc(58px + var(--safe-t)); max-width: 300px; font-size: 13px; padding: 6px 10px 6px 8px; opacity: .96; }
+  .tut-card .icon { width: 28px; height: 28px; }
 }

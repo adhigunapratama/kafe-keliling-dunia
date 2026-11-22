@@ -10,6 +10,8 @@ import { settings } from './ui/settings';
 import { setLang } from './data/i18n';
 import { audio } from './engine/audio';
 import { setNarration, unlockSpeech } from './engine/speech';
+import { initSave } from './game/progress';
+import { initBackup } from './net/backup';
 
 const s = settings.get();
 setLang(s.lang);
@@ -30,4 +32,5 @@ window.addEventListener('keydown', unlock, { capture: true });
 document.addEventListener('contextmenu', (e) => e.preventDefault());
 document.addEventListener('dblclick', (e) => e.preventDefault(), { passive: false });
 
+void initSave().then(initBackup);
 render(<App />, document.getElementById('app')!);

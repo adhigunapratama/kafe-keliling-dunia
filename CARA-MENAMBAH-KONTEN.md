@@ -73,7 +73,10 @@ Stasiun dapur yang muncul di level dihitung otomatis dari resep menu level itu.
 3. **Level** di `src/data/levels.ts` → `LEVELS`. Semua angka kesulitan ada di sini:
    jumlah meja (2–5), jeda kedatangan, kesabaran per fase, ukuran rombongan, jumlah
    piring, durasi, batas bintang, lama makan.
-4. **Teks** `country.<id>` di kedua file i18n.
+4. **Teks** `country.<id>` dan nama kafe `cafe.<id>` di kedua file i18n.
+5. **Peta:** tambahkan negara di `src/data/map-countries.json` (kode bendera -> id ISO
+   numerik world-atlas + titik pin [bujur, lintang]; `keepBox` untuk membuang wilayah
+   seberang laut). Peta dibangun ulang otomatis saat `npm run build`.
 
 Level otomatis "bisa dimainkan" begitu semua menunya punya data menu + resep.
 
