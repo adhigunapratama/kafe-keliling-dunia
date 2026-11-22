@@ -9,7 +9,7 @@ import { Btn, Flag, Icon, IconBtn, Stars } from './components';
 import { isLevelPlayable } from '../game/levelCheck';
 
 /** Hasil Level: latar kuning + konfeti, 3 bintang, statistik TIM (bukan per anak). */
-export function ResultScreen({ state, onNext, onReplay, onHome }: { state: CafeState; onNext: (id: number) => void; onReplay: () => void; onHome: () => void }) {
+export function ResultScreen({ state, onNext, onReplay, onHome, readonly }: { state: CafeState; onNext: (id: number) => void; onReplay: () => void; onHome: () => void; readonly?: boolean }) {
   const L = getLevel(state.level);
   const stars = starsFor(state.stats.score, L);
   const coins = coinsFor(state.stats.score, state.stats.happy, L);
@@ -44,7 +44,9 @@ export function ResultScreen({ state, onNext, onReplay, onHome }: { state: CafeS
         </div>
         {st.right > 0 && <div class="result-badge"><Icon name="bell" /> {badge}</div>}
         <div class="result-coins"><Icon name="coin" /> {t('result.coins', { n: coins })}</div>
-        <div class="result-actions">
+        {readonly ? (
+          <div class="result-actions"><span class="dots"><i /><i /><i /></span><span class="wait-text">{t('net.waitingKakak')}</span><IconBtn icon="home" label={t('common.quit')} onClick={onHome} /></div>
+        ) : <div class="result-actions">
           {next && nc && (
             <Btn color="red" big disabled={!nextOk} onClick={() => onNext(next.id)}>
               <Flag code={nc.flag} /> {nextOk ? t('result.next', { country: t(`country.${nc.id}`) }) : t('result.nextSoon', { country: t(`country.${nc.id}`) })}
@@ -53,7 +55,7 @@ export function ResultScreen({ state, onNext, onReplay, onHome }: { state: CafeS
           <Btn color="blue" disabled title={t('title.joinSoon')}><Icon name="palette" /> {t('result.decorate')}</Btn>
           <IconBtn icon="replay" label={t('result.replay')} onClick={onReplay} color="yellow" />
           <IconBtn icon="home" label={t('common.quit')} onClick={onHome} />
-        </div>
+        </div>}
       </div>
     </div>
   );

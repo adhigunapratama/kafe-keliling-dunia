@@ -10,7 +10,7 @@ Android dan Safari iOS, layar mendatar.
 
 ## Status
 
-**Tahap 1 — inti di satu perangkat** (lihat `CHANGELOG.md`).
+**Tahap 2 — main berdua di dua perangkat** (lihat `CHANGELOG.md`).
 Coba lewat URL preview Cloudflare Pages (lihat `DEPLOY.md`).
 
 ## Perintah
@@ -32,6 +32,18 @@ node tools/smoke-minigames.mjs http://localhost:4173/  # setiap mini-game dengan
 
 `?test=1` di URL langsung membuka Mode Uji 1 Perangkat.
 
+Server ruangan (main berdua) di `worker/`:
+
+```bash
+cd worker && npm install
+npx wrangler dev --port 8787            # server lokal
+node test/two-clients.mjs               # uji dua klien (server harus menyala)
+```
+
+Uji dua browser lewat server lokal: buka game dengan `?server=http://127.0.0.1:8787`, atau
+`node tools/smoke-net.mjs http://localhost:4173/ http://127.0.0.1:8787`.
+Untuk pengembangan, salin `.env.example` menjadi `.env` dan isi `VITE_ROOM_SERVER_URL`.
+
 ## Struktur
 
 | Folder | Isi |
@@ -41,10 +53,10 @@ node tools/smoke-minigames.mjs http://localhost:4173/  # setiap mini-game dengan
 | `src/models` | tokoh chibi, makanan prosedural, sistem ganti model GLB |
 | `src/game` | simulasi kafe (host otoritatif), navigasi, panduan, sesi, kemajuan |
 | `src/minigames` | mini-game memasak dan cuci piring |
-| `src/net` | protokol pesan (Tahap 2: WebSocket ke Worker) |
+| `src/net` | protokol pesan, klien WebSocket + sambung ulang, pengendali ruangan host/tamu |
 | `src/ui` | layar & HUD (Preact + CSS), ikon SVG |
 | `src/data` | **semua konten**: level, menu, resep, bahan, negara, bendera, tata letak, teks ID/EN |
-| `worker/` | server ruangan Cloudflare Worker + Durable Object (Tahap 2) |
+| `worker/` | server ruangan Cloudflare Worker + Durable Object (`wrangler.jsonc` sendiri) |
 | `tools/` | skrip: ikon PWA, uji asap, (Tahap 4) build peta |
 | `tests/` | tes Vitest |
 
