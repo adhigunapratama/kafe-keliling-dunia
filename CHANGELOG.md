@@ -2,6 +2,19 @@
 
 Format: versi · tanggal · ringkasan. Nomor versi tampil di Pengaturan.
 
+## 0.2.0 · 2026-11-22 · Tahap 2 — main berdua
+
+- Server ruangan Cloudflare Worker + Durable Object (`KafeRoom`, backend SQLite, WebSocket Hibernation API, ping/pong otomatis tanpa membangunkan objek, kedaluwarsa otomatis setelah 2 jam tidak aktif).
+- Kode ruangan 4 angka; host memakai token rahasia; cek origin + CORS untuk `*.pages.dev` proyek.
+- Layar Ruangan & Pilih Peran di HP Koki: kode di kotak kuning, kartu Koki/Pelayan (Siap/Terhubung), Mode Santai, "Mulai Main!".
+- Keypad angka besar 3×4 di tablet Adik (hapus & centang), tanda silang bila kode salah.
+- HP Koki = host otoritatif; Pelayan mengirim ketukan, menerima event + status ringkas (lintasan, bukan posisi per frame) dan menganimasikan secara lokal.
+- Emoji, banner bel, jeda, hasil level, dan "Main lagi"/"Lanjut" tersinkron di dua perangkat.
+- Sambung ulang otomatis: game dijeda dengan "Menunggu Adik…/Kakak…" lalu lanjut sendiri; perangkat yang dimuat ulang masuk lagi ke ruangan yang sama.
+- Nomor versi protokol: versi berbeda -> "Perbarui game dulu ya".
+- Layar tetap menyala selama bermain (Wake Lock, bila didukung).
+- DEPLOY.md Bagian 2 (Worker). Tes otomatis: 22 tes dua klien terhadap `wrangler dev` + 18 langkah uji dua browser.
+
 ## 0.1.0 · 2026-11-22 · Tahap 1 — inti di satu perangkat
 
 - Mode Uji 1 Perangkat: layar Koki dan Pelayan berdampingan (atau bergantian lewat tombol Koki / Dua layar / Pelayan).

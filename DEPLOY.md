@@ -7,7 +7,7 @@ baru di GitHub.
 Ada dua bagian:
 
 1. **Game (PWA) → Cloudflare Pages** — bagian ini sudah bisa dipakai sejak Tahap 1.
-2. **Server ruangan (main berdua di 2 perangkat) → Cloudflare Worker** — *menyusul di Tahap 2*.
+2. **Server ruangan (main berdua di 2 perangkat) → Cloudflare Worker** — mulai Tahap 2.
 
 ---
 
@@ -51,8 +51,8 @@ Isi persis seperti ini:
 | **Build output directory** | `dist` |
 | **Root directory** | biarkan kosong |
 
-Buka **Environment variables (advanced)** — boleh dilewati di Tahap 1. Mulai Tahap 2
-di sini akan diisi `VITE_ROOM_SERVER_URL` (lihat Bagian 2).
+Buka **Environment variables (advanced)** — boleh dilewati dulu. Variabel
+`VITE_ROOM_SERVER_URL` diisi setelah server ruangan dibuat (Bagian 2, Langkah 4).
 
 > Versi Node.js sudah diatur otomatis lewat file `.nvmrc` (Node 22). Tidak perlu
 > mengisi apa pun untuk itu.
@@ -125,11 +125,85 @@ dibuat untuk push yang terjadi *setelah* proyek Pages dibuat.
 
 ---
 
-## Bagian 2 — Server ruangan (Cloudflare Worker + Durable Object)
+## Bagian 2 — Server ruangan (main berdua di 2 perangkat)
 
-*Akan dilengkapi di Tahap 2* (main berdua di dua perangkat dengan kode ruangan 4 angka).
-Ringkasnya nanti: membuat Worker dari repo yang sama dengan **root directory
-`worker/`**, lalu mengisi variabel build `VITE_ROOM_SERVER_URL` di proyek Pages.
+Server ruangan adalah Cloudflare **Worker** kecil (folder `worker/` di repo) yang
+menghubungkan HP Kakak dan tablet Adik lewat kode ruangan 4 angka. Gratis.
+
+### Langkah 1: Buat Worker dari repo GitHub
+
+1. Dasbor Cloudflare → **Workers & Pages** → tombol biru **Create** (atau
+   **Create application**).
+2. Pilih tab **Workers** (bukan Pages) → **Import a repository**
+   (atau **Continue with GitHub**).
+3. Pilih repo **kafe-keliling-dunia** → **Next**.
+4. Isi pengaturan persis seperti ini:
+
+| Kolom | Isi |
+|---|---|
+| **Project name** | `kafe-room` ← **harus persis ini** (sama dengan nama di `worker/wrangler.jsonc`) |
+| **Build command** | biarkan kosong |
+| **Deploy command** | `npx wrangler deploy` |
+| **Root directory** (di *Advanced settings*) | `worker` |
+
+5. Klik **Create and deploy** (atau **Deploy**). Tunggu sampai **Success**.
+
+> Kalau Cloudflare meminta memilih *subdomain workers.dev* (hanya terjadi untuk
+> Worker pertama di akun), ketik nama apa saja yang Anda suka, mis. `abangade`.
+
+### Langkah 2: Atur branch Worker
+
+Selama masih tahap uji coba, server ruangan dibangun dari branch tahap, bukan `main`.
+
+1. Workers & Pages → klik **kafe-room** → tab **Settings** → bagian **Build**.
+2. Di **Branch control**, ubah **Production branch** menjadi **`tahap-2`** → **Save**.
+3. Buka tab **Deployments** → kalau belum ada deployment dari `tahap-2`, klik
+   **Retry** / **Deploy** pada build terakhir (atau tunggu push berikutnya).
+
+> Setelah Pull Request tahap digabung ke `main`, kembalikan Production branch ke `main`.
+
+### Langkah 3: Salin alamat Worker
+
+1. Workers & Pages → **kafe-room** → di bagian atas (atau tab **Settings → Domains & Routes**)
+   ada alamat seperti:
+   ```
+   https://kafe-room.abangade.workers.dev
+   ```
+2. Cek: buka alamat itu di browser. Harus muncul tulisan **ok**.
+3. Salin alamatnya (tanpa garis miring di akhir).
+
+### Langkah 4: Beri tahu game alamat server (variabel `VITE_ROOM_SERVER_URL`)
+
+1. Workers & Pages → klik proyek **Pages** Anda (mis. **cafe-abangade**) → tab **Settings**
+   → **Variables and Secrets** (atau **Environment variables**).
+2. Klik **Add** (tambah variabel) dan isi:
+   - **Variable name:** `VITE_ROOM_SERVER_URL`
+   - **Value:** alamat Worker dari Langkah 3, mis. `https://kafe-room.abangade.workers.dev`
+   - **Type:** *Text* (bukan Secret)
+3. Pastikan variabel ini ada untuk **Production** *dan* **Preview**. Di beberapa tampilan
+   ada pilihan lingkungan di atas daftar; tambahkan di keduanya.
+4. Klik **Save**.
+5. Variabel baru dipakai pada build berikutnya: buka tab **Deployments** → pada deployment
+   terbaru klik **⋯** → **Retry deployment**.
+
+### Langkah 5: Izinkan alamat game Anda (hanya bila nama proyek Pages BUKAN `cafe-abangade`)
+
+Server hanya melayani alamat game Anda sendiri. Daftar alamat yang diizinkan ada di
+`worker/wrangler.jsonc` (`ALLOWED_ORIGINS`) dan sudah diisi untuk `cafe-abangade.pages.dev`
+beserta semua alamat preview-nya (`*.cafe-abangade.pages.dev`). Kalau nama proyek Pages Anda
+lain, minta saya mengubahnya, atau ubah di dasbor: **kafe-room → Settings → Variables and
+Secrets → ALLOWED_ORIGINS**.
+
+### Cara main berdua
+
+1. **HP Kakak:** buka game → **Lanjutkan** → muncul kode 4 angka.
+2. **Tablet Adik:** buka game → **Gabung pakai Kode** → ketik kode di keypad → centang hijau.
+3. Di HP Kakak, kartu **Pelayan** berubah menjadi **Terhubung** → tekan **Mulai Main!**
+
+Kedua perangkat boleh memakai jaringan berbeda (WiFi dan data seluler). Kalau sinyal
+salah satu putus, game berhenti sebentar dengan pesan *"Menunggu Adik…"* /
+*"Menunggu Kakak…"* lalu lanjut sendiri. Kalau aplikasi tertutup atau dimuat ulang,
+buka lagi saja: perangkat otomatis masuk kembali ke ruangan yang sama (selama 2 jam).
 
 ---
 

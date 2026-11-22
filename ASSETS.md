@@ -26,6 +26,7 @@ publik**, serta library open-source berlisensi permisif (MIT/BSD/Apache/ISC).
 | Preact | MIT |
 | Vite, vite-plugin-pwa, Workbox | MIT |
 | Vitest, TypeScript | MIT / Apache-2.0 |
+| Wrangler, @cloudflare/workers-types (alat server) | MIT / Apache-2.0 |
 
 ## Sistem ganti model (GLB)
 

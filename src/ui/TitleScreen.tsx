@@ -13,8 +13,10 @@ import { useStore } from './store';
 import { Btn, Flag, Icon, IconBtn, Modal } from './components';
 import { SettingsModal } from './SettingsModal';
 import { reportFrame } from './fps';
+import { roomServerUrl } from '../net/client';
 
-export function TitleScreen({ onPlay }: { onPlay: (level: number) => void }) {
+export function TitleScreen({ onHost, onJoin, onTest }: { onHost: (level: number) => void; onJoin: () => void; onTest: (level: number) => void }) {
+  const hasServer = !!roomServerUrl();
   const host = useRef<HTMLDivElement>(null);
   const s = useStore(settings);
   const [showSettings, setShowSettings] = useState(false);
@@ -53,15 +55,15 @@ export function TitleScreen({ onPlay }: { onPlay: (level: number) => void }) {
         <span class="badge-pill"><Icon name="heart" /> {t('title.badge')}</span>
         <h1 class="title-h1">{t('app.title')}</h1>
         <p class="title-sub">{t('app.subtitle')}</p>
-        <Btn color="red" big class="btn-continue" onClick={() => { audio.unlock(); onPlay(playable); }}>
+        <Btn color="red" big class="btn-continue" onClick={() => { audio.unlock(); (hasServer ? onHost : onTest)(playable); }}>
           <span class="bc-main"><Icon name="play" /> {t('title.continue')}</span>
           <span class="bc-info"><Flag code={c.flag} /> {t('title.continueInfo', { level: playable, total: LEVELS.length, country: t(`country.${c.id}`), stars: totalStars(prog) })}</span>
         </Btn>
-        <Btn color="blue" big disabled class="btn-join">
+        <Btn color="blue" big class="btn-join" disabled={!hasServer} onClick={() => { audio.unlock(); onJoin(); }}>
           <span class="bc-main"><Icon name="tray" /> {t('title.join')}</span>
           <span class="bc-info">{t('title.joinSoon')}</span>
         </Btn>
-        <p class="test-note"><Icon name="chefHat" /> + <Icon name="tray" /> {t('title.testMode')}</p>
+        <button class="test-note" onClick={() => { audio.unlock(); onTest(playable); }}><Icon name="chefHat" /> + <Icon name="tray" /> {t('title.testMode')}</button>
         <div class="title-row">
           <IconBtn icon="gear" label={t('common.settings')} onClick={() => setShowSettings(true)} />
           <IconBtn icon={s.muted ? 'soundOff' : 'sound'} label={t('common.sound')} onClick={() => { const m = !s.muted; settings.update({ muted: m }); audio.setMuted(m); }} />
