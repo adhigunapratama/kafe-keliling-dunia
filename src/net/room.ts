@@ -208,6 +208,7 @@ export class RoomGuest implements WaiterLink {
   }
 
   send(msg: WaiterMsg) { this.client.send(msg); }
+  isPaused() { return this.room.get().paused || this.snapPaused; }
   onMessage(f: (m: HostMsg) => void) { this.listeners.add(f); return () => { this.listeners.delete(f); }; }
   close() { this.client.close(); }
 }

@@ -34,6 +34,14 @@ export class View3D {
   height = 1;
   private ro: ResizeObserver;
   private disposed = false;
+  // resolusi adaptif: turun bila fps rendah, naik lagi bila lancar
+  private dprMax = 1;
+  dpr = 1;
+  private fpsEma = 60;
+  private lowT = 0;
+  private highT = 0;
+  private lastRender = 0;
+  adaptive = true;
 
   constructor(readonly container: HTMLElement, preset: Preset) {
     this.cfg = presetConfig(preset);
@@ -41,6 +49,7 @@ export class View3D {
     this.b = new Builder(this.lib, this.cfg.segScale);
     const r = (this.renderer = new THREE.WebGLRenderer({ antialias: this.cfg.antialias, alpha: true, powerPreference: 'high-performance' }));
     r.setPixelRatio(this.cfg.pixelRatio);
+    this.dpr = this.dprMax = this.cfg.pixelRatio;
     r.shadowMap.enabled = this.cfg.shadows;
     r.shadowMap.type = THREE.PCFSoftShadowMap;
     r.shadowMap.autoUpdate = false;
@@ -132,7 +141,27 @@ export class View3D {
     return [((v.x + 1) / 2) * this.width, ((1 - v.y) / 2) * this.height];
   }
 
-  render() { if (!this.disposed) this.renderer.render(this.scene, this.camera); }
+  render() { if (!this.disposed) { this.adapt(); this.renderer.render(this.scene, this.camera); } }
+
+  /** Atur pixel ratio berdasar fps rata-rata (dipanggil tiap render). */
+  protected adapt() {
+    const now = performance.now();
+    const dt = this.lastRender ? (now - this.lastRender) / 1000 : 0;
+    this.lastRender = now;
+    if (!this.adaptive || dt <= 0 || dt > 0.5) return;
+    this.fpsEma += (1 / dt - this.fpsEma) * 0.05;
+    if (this.fpsEma < 40) { this.lowT += dt; this.highT = 0; }
+    else if (this.fpsEma > 56) { this.highT += dt; this.lowT = 0; }
+    else { this.lowT = 0; this.highT = 0; }
+    let next = this.dpr;
+    if (this.lowT > 2.5 && this.dpr > 0.75) next = Math.max(0.75, this.dpr - 0.25);
+    else if (this.highT > 8 && this.dpr < this.dprMax) next = Math.min(this.dprMax, this.dpr + 0.25);
+    if (next !== this.dpr) {
+      this.dpr = next; this.lowT = 0; this.highT = 0;
+      this.renderer.setPixelRatio(next);
+      this.renderer.setSize(this.width, this.height, false);
+    }
+  }
 
   info() { const i = this.renderer.info.render; return { calls: i.calls, triangles: i.triangles }; }
 

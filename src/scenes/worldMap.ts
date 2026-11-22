@@ -302,7 +302,7 @@ export class WorldMapView extends View3D {
     this.labels.end();
   }
 
-  render() { this.renderer.render(this.scene, this.pcam); }
+  render() { this.adapt(); this.renderer.render(this.scene, this.pcam); }
   info() { const i = this.renderer.info.render; return { calls: i.calls, triangles: i.triangles }; }
   dispose() { this.labels.clear(); super.dispose(); }
 }

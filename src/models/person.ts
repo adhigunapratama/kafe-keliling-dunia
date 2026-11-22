@@ -31,7 +31,9 @@ export interface PersonPose {
 const BY = 0.66; // tinggi pusat badan (dari referensi)
 const HY = BY + 0.62; // tinggi kepala
 
-const geoCache = new Map<string, { body: THREE.BufferGeometry; arm: THREE.BufferGeometry; leg: THREE.BufferGeometry }>();
+type PersonGeo = { body: THREE.BufferGeometry; arm: THREE.BufferGeometry; leg: THREE.BufferGeometry };
+/** Cache per Builder (= per adegan): ikut dibuang saat adegan ditutup, jadi tidak menumpuk antar level. */
+const geoCaches = new WeakMap<Builder, Map<string, PersonGeo>>();
 
 function lookKey(o: PersonLook) {
   return [o.skin, o.shirt, o.pants, o.hair ?? -1, o.hairStyle ?? 0, o.apron ?? -1, o.chefHat ? 1 : 0, o.scarf ?? -1].join('|');
@@ -40,6 +42,8 @@ function lookKey(o: PersonLook) {
 /** Bangun geometri tokoh (sekali per tampilan, lalu di-cache & dipakai ulang). */
 function buildGeometry(b: Builder, o: PersonLook) {
   const key = lookKey(o);
+  let geoCache = geoCaches.get(b);
+  if (!geoCache) { geoCache = new Map(); geoCaches.set(b, geoCache); }
   const hit = geoCache.get(key);
   if (hit) return hit;
   const root = new THREE.Group();

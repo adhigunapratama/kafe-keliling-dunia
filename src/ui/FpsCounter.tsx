@@ -9,7 +9,7 @@ export function FpsCounter() {
   if (!s.showFps) return null;
   return (
     <div class={`fps ${f.fps < 30 ? 'bad' : f.fps < 50 ? 'mid' : ''}`}>
-      <b>{f.fps}</b> fps<small>{f.calls} dc · {(f.tris / 1000).toFixed(0)}k ▲</small>
+      <b>{f.fps}</b> fps<small>{f.calls} dc · {(f.tris / 1000).toFixed(0)}k ▲</small><small>res ×{f.dpr.toFixed(2)}</small>
     </div>
   );
 }

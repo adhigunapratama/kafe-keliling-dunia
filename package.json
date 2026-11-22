@@ -1,7 +1,7 @@
 {
   "name": "kafe-keliling-dunia",
   "private": true,
-  "version": "0.5.0",
+  "version": "1.0.0",
   "type": "module",
   "description": "Kafe Keliling Dunia - game co-op 3D untuk dua anak (Koki & Pelayan)",
   "scripts": {

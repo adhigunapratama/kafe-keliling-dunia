@@ -46,8 +46,12 @@ export function ChefScreen({ session, visible, onPause }: { session: HostSession
     view.fit();
     viewRef.current = view;
     const labels = new AnchorLayer(view.overlay);
+    let frame = 0, pausedDrawn = false;
     const stop = addTick((dt) => {
       if (!visRef.current) return;
+      // hemat baterai: berhenti merender saat dijeda, dan render lebih jarang di balik mini-game
+      if (session.paused) { if (pausedDrawn) return; pausedDrawn = true; } else pausedDrawn = false;
+      if (gameRef.current && frame++ % 3 !== 0) return;
       const s = session.sim.state;
       view.update(dt, s);
       // stasiun aktif = langkah sekarang tiket terpilih (+ wastafel bila piring habis)

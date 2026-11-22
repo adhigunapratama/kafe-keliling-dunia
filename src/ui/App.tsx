@@ -4,7 +4,7 @@ import { TitleScreen } from './TitleScreen';
 import { TestModeScreen } from './TestModeScreen';
 import { HostFlow } from './HostFlow';
 import { GuestFlow } from './GuestFlow';
-import { WorldMapScreen } from './WorldMapScreen';
+import { LazyWorldMap as WorldMapScreen } from './LazyMap';
 import { SoloShop } from './SoloShop';
 import { FpsCounter } from './FpsCounter';
 import { UpdateToast } from './pwa';

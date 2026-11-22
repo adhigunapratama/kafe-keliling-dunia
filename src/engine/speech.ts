@@ -8,6 +8,9 @@ let enabled = true;
 let last = '';
 let lastAt = 0;
 
+// iOS/Android memuat daftar suara belakangan: muat ulang saat siap
+try { if (typeof speechSynthesis !== 'undefined') speechSynthesis.addEventListener?.('voiceschanged', () => speechSynthesis.getVoices()); } catch { /* abaikan */ }
+
 export function setNarration(on: boolean) { enabled = on; if (!on) try { speechSynthesis.cancel(); } catch { /* abaikan */ } }
 
 function pickVoice(): SpeechSynthesisVoice | null {

@@ -38,6 +38,8 @@ export const seretBahan: MinigameFactory = (h) => {
   let idx = 0, mistakes = 0;
   const refresh = () => {
     btns.forEach((b, id) => b.classList.toggle('next', id === items[idx]));
+    // bahan berikutnya selalu terlihat walau daftar perlu digulir (layar HP pendek)
+    try { btns.get(items[idx])?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch { /* abaikan */ }
     if (idx < items.length) h.setHint(scatter
       ? h.t('mg.scatterHint', { item: h.t(`ing.${items[idx]}`), base: baseName, n: idx, total: items.length })
       : h.t('mg.dragHint', { item: h.t(`ing.${items[idx]}`), n: idx, total: items.length }));

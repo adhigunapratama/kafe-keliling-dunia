@@ -63,8 +63,8 @@ export function DecorShop({ view, picks, me, onPick, onPlace, onClose, bought }:
                   <>
                     <span class="shop-price"><Icon name="coin" />{d.price}</span>
                     <div class="shop-picks">
-                      <button class={`pick-btn chef ${pc ? 'on' : ''}`} disabled={me === 'waiter' || !afford} aria-label="Kakak" onClick={() => onPick('chef', d.id)}><Icon name="chefHat" /></button>
-                      <button class={`pick-btn waiter ${pw ? 'on' : ''}`} disabled={me === 'chef' || !afford} aria-label="Adik" onClick={() => onPick('waiter', d.id)}><Icon name="tray" /></button>
+                      <button class={`pick-btn chef ${pc ? 'on' : ''}`} disabled={me === 'waiter' || !afford} aria-label={t('role.kakak')} onClick={() => onPick('chef', d.id)}><Icon name="chefHat" /></button>
+                      <button class={`pick-btn waiter ${pw ? 'on' : ''}`} disabled={me === 'chef' || !afford} aria-label={t('role.adik')} onClick={() => onPick('waiter', d.id)}><Icon name="tray" /></button>
                     </div>
                   </>
                 )}

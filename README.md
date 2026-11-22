@@ -10,7 +10,16 @@ Android dan Safari iOS, layar mendatar.
 
 ## Status
 
-**Tahap 5 — 15 level, final Indonesia, Hias Kafe** (lihat `CHANGELOG.md`).
+**Versi 1.0** — 15 level, main berdua, Peta Dunia, Hias Kafe (lihat `CHANGELOG.md`).
+
+| Layar (preset Tinggi) | Draw call | Segitiga |
+|---|---|---|
+| Judul | 8 | 22 rb |
+| Peta Dunia | 14 | 47 rb |
+| Dapur Level 15 | 33 | 54 rb |
+| Ruang makan Level 15 (10 tamu) | 69 | 125 rb |
+
+Target: < 120 draw call dan < 150 rb segitiga per layar (`node tools/perf.mjs`).
 Coba lewat URL preview Cloudflare Pages (lihat `DEPLOY.md`).
 
 ## Perintah
@@ -29,6 +38,8 @@ npm run build && npx vite preview --port 4173
 node tools/smoke.mjs http://localhost:4173/            # main otomatis + tangkapan layar
 node tools/smoke-minigames.mjs http://localhost:4173/  # setiap mini-game dengan gerakan jari
 node tools/smoke-stage3.mjs http://localhost:4173/     # mini-game Tahap 3 + tutorial
+node tools/smoke-mobile.mjs http://localhost:4173/     # emulasi iPhone/Android (sentuh) + PWA offline
+node tools/perf.mjs http://localhost:4173/ tinggi      # draw call & segitiga per layar
 ```
 
 Dengan server ruangan lokal menyala (lihat di bawah):

@@ -629,3 +629,39 @@ h1, h2, h3 { font-family: var(--font-title); margin: 0; line-height: 1.05; }
 .swatch { width: 56px; height: 56px; border-radius: 50%; border: 3px solid var(--ink); cursor: pointer; padding: 0; box-shadow: 0 3px 0 rgba(43,35,64,.2); }
 .swatch.on { box-shadow: 0 0 0 5px var(--yellow), 0 3px 0 rgba(43,35,64,.2); }
 @media (max-height: 460px) { .swatch { width: 46px; height: 46px; } .look-preview { width: 90px; height: 100px; } .shop-pic { width: 60px; height: 60px; } .pick-btn { width: 56px; height: 56px; } }
+
+/* ============ Tahap 6: layar pendek (HP landscape) ============ */
+/* area mini-game: ukuran benda dibatasi juga oleh TINGGI area (container query; iOS 16+), dengan cadangan lebar */
+.mg-area { container-type: size; }
+.mg-board { width: min(78%, 420px, calc(84cqh * 1.35)); }
+.mg-plate { width: min(60%, 300px, 80cqh); }
+.mg-scatter .mg-plate { width: min(66%, 330px, 82cqh); }
+.mg-bowl { width: min(62%, 320px, 80cqh); }
+.mg-mat { width: min(46%, 260px, calc(82cqh * .8)); }
+.mg-fold { width: min(50%, 280px, 70cqh); }
+.mg-grill { width: min(70%, 360px, calc(52cqh * 1.6)); }
+.mg-pot { width: min(90%, 260px, calc(62cqh * 1.2)); }
+.mg-gauge { width: min(95%, 340px, calc(50cqh * 1.8)); }
+.mg-timing { gap: 4px; padding: 6px; }
+@media (max-height: 460px) {
+  .title-side { gap: 6px; padding-top: calc(6px + var(--safe-t)); padding-bottom: 6px; }
+  .badge-pill { display: none; }
+  .title-h1 { font-size: 32px; }
+  .title-sub { font-size: 14px; margin: -4px 0 0; }
+  .btn-continue, .btn-join { min-height: 56px; padding: 6px 16px; }
+  .bc-main { font-size: 19px; }
+  .bc-info { font-size: 13px; }
+  .test-note { min-height: 30px; padding: 0; font-size: 13px; }
+  .title-row { gap: 6px; margin-top: 0; }
+  .title-row .btn { min-height: 48px; }
+  .title-row .btn-icon { width: 48px; min-width: 48px; }
+  .btn-map, .btn-lang, .btn-small { padding: 4px 10px; font-size: 14px; }
+  .mg-tap { min-height: 52px; font-size: 22px; }
+}
+@media (max-height: 460px) {
+  .mg-side { width: 150px; padding: 6px; }
+  .mg-grid { gap: 6px; }
+  .mg-ing { min-height: 58px; padding: 4px; border-radius: 14px; }
+  .mg-ing .svg { width: 40px; height: 40px; }
+  .mg-ing span { font-size: 10px; line-height: 1; }
+}

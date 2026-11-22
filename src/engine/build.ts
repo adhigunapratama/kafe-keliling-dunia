@@ -14,6 +14,8 @@ export class Builder {
   constructor(readonly lib: MaterialLib, readonly segScale = 1) {}
 
   private seg(n: number, min = 6) { return Math.max(min, Math.round(n * this.segScale)); }
+  /** Segmen sesuai ukuran: benda kecil tidak perlu sehalus kepala tokoh (hemat segitiga). */
+  private segFor(r: number, max: number, min = 8) { return Math.max(min, Math.min(max, Math.round(r * 110))); }
   private cached(key: string, make: () => THREE.BufferGeometry) {
     let g = this.geo.get(key);
     if (!g) { g = make(); this.geo.set(key, g); }
@@ -35,23 +37,24 @@ export class Builder {
     const m = this.mesh(g, color, parent, o); m.position.set(x, y, z); return m;
   }
   cyl(rt: number, rb: number, h: number, color: number, x: number, y: number, z: number, parent: THREE.Object3D | null = null, o: MatOpts = {}, seg = 40) {
-    const s = seg <= 6 ? seg : this.seg(seg);
+    const s = seg <= 6 ? seg : this.seg(Math.min(seg, this.segFor(Math.max(rt, rb), seg, 10)));
     const g = this.cached(`cy${rt},${rb},${h},${s}`, () => new THREE.CylinderGeometry(rt, rb, h, s));
     const m = this.mesh(g, color, parent, o); m.position.set(x, y, z); return m;
   }
   sph(r: number, color: number, x: number, y: number, z: number, parent: THREE.Object3D | null = null, o: MatOpts = {}, seg = 32) {
-    const ws = this.seg(r < 0.06 ? Math.min(seg, 12) : seg), hs = this.seg(r < 0.06 ? 8 : Math.round(seg * 0.62), 5);
+    const sz = this.segFor(r, seg, 10);
+    const ws = this.seg(sz), hs = this.seg(Math.max(6, Math.round(sz * 0.62)), 5);
     const g = this.cached(`sp${r},${ws},${hs}`, () => new THREE.SphereGeometry(r, ws, hs));
     const m = this.mesh(g, color, parent, o); m.position.set(x, y, z); return m;
   }
   /** Belahan bola (mis. rambut, bel). thetaLen = bagian dari kutub atas. */
   dome(r: number, thetaLen: number, color: number, x: number, y: number, z: number, parent: THREE.Object3D | null = null, o: MatOpts = {}) {
-    const ws = this.seg(32), hs = this.seg(16, 5);
+    const ws = this.seg(this.segFor(r, 32, 10)), hs = this.seg(Math.max(6, Math.round(this.segFor(r, 16, 6))), 5);
     const g = this.cached(`dm${r},${thetaLen},${ws}`, () => new THREE.SphereGeometry(r, ws, hs, 0, Math.PI * 2, 0, thetaLen));
     const m = this.mesh(g, color, parent, o); m.position.set(x, y, z); return m;
   }
   cap(r: number, len: number, color: number, x: number, y: number, z: number, parent: THREE.Object3D | null = null, o: MatOpts = {}) {
-    const cs = this.segScale < 0.7 ? 4 : 8, rs = this.seg(20);
+    const cs = this.segScale < 0.7 || r < 0.06 ? 3 : r < 0.12 ? 5 : 8, rs = this.seg(this.segFor(r, 20, 8));
     const g = this.cached(`ca${r},${len},${cs},${rs}`, () => new THREE.CapsuleGeometry(r, len, cs, rs));
     const m = this.mesh(g, color, parent, o); m.position.set(x, y, z); return m;
   }

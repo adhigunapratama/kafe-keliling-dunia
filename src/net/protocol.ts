@@ -48,4 +48,6 @@ export interface WaiterLink {
   getState(): CafeState | null;
   send(msg: WaiterMsg): void;
   onMessage(f: (m: HostMsg) => void): () => void;
+  /** Game sedang dijeda (layar boleh berhenti merender). */
+  isPaused?(): boolean;
 }

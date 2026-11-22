@@ -139,7 +139,9 @@ export class DiningView extends View3D {
     for (const p of s.parties) {
       if (p.table >= 0 || p.state === 'leaving') continue;
       const m = moveAt(p.guests[0].move, s.t);
-      cands.push({ t: { k: 'party', id: p.id }, p: new THREE.Vector3(m.x, 1.1, m.z), r: 0.9 });
+      // badan tamu DAN gelembung di atas kepalanya sama-sama bisa diketuk
+      cands.push({ t: { k: 'party', id: p.id }, p: new THREE.Vector3(m.x, 1.1, m.z), r: 1.0 });
+      cands.push({ t: { k: 'party', id: p.id }, p: new THREE.Vector3(m.x, GUEST_HEAD_Y + 0.5, m.z), r: 0.9 });
     }
     const unit = this.pxPerUnit();
     let best: Target | null = null, bd = Infinity;

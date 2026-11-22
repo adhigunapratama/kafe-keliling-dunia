@@ -2,6 +2,20 @@
 
 Format: versi · tanggal · ringkasan. Nomor versi tampil di Pengaturan.
 
+## 1.0.0 · 2026-11-22 · Tahap 6 — poles & rilis
+
+- **Performa:** jumlah segmen geometri menyesuaikan ukuran benda (ruang makan Level 15 di preset Tinggi turun dari 232 ribu ke ±125 ribu segitiga); semua layar di bawah 120 draw call dan 150 ribu segitiga (`tools/perf.mjs`).
+- **Resolusi adaptif:** pixel ratio turun bertahap bila fps < 40 dan naik lagi bila lancar (angka `res` di penghitung FPS).
+- Hemat baterai: render berhenti saat game dijeda; dapur dirender lebih jarang di balik mini-game.
+- Geometri tokoh tamu dibuang bersama adegan (tidak menumpuk saat bermain lama).
+- Peta Dunia dimuat saat dibuka; unduhan awal ±820 KB (±240 KB gzip), seluruh game ±1,4 MB ter-cache untuk offline.
+- **Layar HP pendek:** layar judul, papan mini-game, dan daftar bahan menyesuaikan tinggi layar; bahan berikutnya otomatis terlihat.
+- Gelembung di atas kepala tamu kini juga bisa diketuk (lebih mudah untuk Adik).
+- Narasi iOS: daftar suara dimuat ulang saat siap.
+- Uji baru: emulasi iPhone & Android dengan layar sentuh (ketuk, swipe, ukuran tombol ≥ 84 px untuk Adik), PWA offline (`tools/smoke-mobile.mjs`).
+- Audit teks: semua teks UI lewat file terjemahan (ID/EN).
+- DEPLOY.md: langkah rilis produksi & perangkat yang didukung.
+
 ## 0.5.0 · 2026-11-22 · Tahap 5 — level 6–15, final Indonesia, Hias Kafe
 
 - **Ke-15 level bisa dimainkan.** Level baru: Argentina (empanada, asado), Australia (meat pie, pavlova — dua menu bergantian di oven), Turki (kebab, baklava — lapisan berurutan), Korea (bibimbap, tteokbokki — banyak topping, 4 meja), Arab Saudi (kabsa, mutabbaq), Tiongkok (dimsum, mi tarik — kukusan & tarik mi), Nigeria (nasi jollof, suya), Thailand (pad thai, ketan mangga), India (kari, naan), dan **Indonesia (final: nasi goreng, sate ayam, es teh manis — 3 menu, 5 meja)**.

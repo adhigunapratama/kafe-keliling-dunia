@@ -216,6 +216,39 @@ ini ikut terpasang (lewat `migrations` di `worker/wrangler.jsonc`).
 
 ---
 
+## Rilis versi 1.0 (produksi)
+
+Selama uji coba, Pages dan Worker dibangun dari branch kerja (`claude/admiring-wozniak-o2prdf`).
+Untuk rilis resmi dari `main`:
+
+1. Buka repo di GitHub → tab **Pull requests** → buka PR **Tahap 6** → **Merge pull request** → **Confirm merge**.
+   PR tahap ini sudah berisi semua tahap sebelumnya; PR tahap lain akan tertutup otomatis
+   (atau tutup saja dengan **Close**).
+2. Cloudflare → **Workers & Pages** → **kafe-room** → **Settings → Build → Branch control** →
+   **Production branch** = `main` → **Save**.
+3. Cloudflare → proyek Pages **cafe-abangade** → **Settings → Builds & deployments** →
+   **Production branch** = `main` → **Save**.
+4. Tunggu ±2 menit sampai keduanya membangun ulang (tab **Deployments**, status **Success**).
+5. Buka **https://cafe-abangade.pages.dev** di kedua perangkat → ketuk **"Ada versi baru!"** bila muncul.
+
+Pembaruan berikutnya: buat branch baru dari `main`, coba lewat URL preview branch itu
+(`https://<branch>.cafe-abangade.pages.dev`), lalu gabungkan ke `main` bila sudah oke.
+
+## Perangkat yang didukung
+
+| Perangkat | Minimum | Disarankan |
+|---|---|---|
+| iPhone / iPad (Safari) | iOS / iPadOS 15 | 16.4 atau lebih baru (layar tetap menyala saat main, tata letak dua layar terbaik) |
+| Android (Chrome) | Chrome 100 | Chrome terbaru |
+
+Tips:
+- **iPhone/iPad:** suara game ikut tombol senyap (silent). Bila tidak terdengar, matikan mode senyap.
+- Narasi suara memakai suara bawaan perangkat. Bila perangkat tidak punya suara Bahasa Indonesia,
+  narasi diam saja (game tetap jalan dengan ikon & efek suara). Di iPhone: **Pengaturan → Aksesibilitas →
+  Konten Lisan → Suara → Bahasa Indonesia** untuk mengunduhnya.
+- Grafis disetel otomatis saat pertama dibuka. Bila terasa patah-patah, buka **Pengaturan → Grafis → Rendah**.
+  Game juga menurunkan resolusi sendiri bila fps turun (lihat angka **res** di penghitung FPS).
+
 ## Mengecek pemakaian paket gratis
 
 Paket gratis Cloudflare sangat cukup untuk pemakaian keluarga:

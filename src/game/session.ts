@@ -49,6 +49,7 @@ export class HostSession {
   localWaiterLink(): WaiterLink {
     return {
       getState: () => this.sim.state,
+      isPaused: () => this.paused,
       send: (m) => this.handleWaiter(m),
       onMessage: (f) => { this.waiterL.add(f); return () => { this.waiterL.delete(f); }; },
     };

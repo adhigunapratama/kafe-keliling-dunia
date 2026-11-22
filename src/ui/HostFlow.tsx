@@ -17,7 +17,7 @@ import { ResultScreen } from './ResultScreen';
 import { SettingsModal } from './SettingsModal';
 import { NetBanner, WaitingOverlay } from './netUi';
 import { useWakeLock } from './wakeLock';
-import { WorldMapScreen } from './WorldMapScreen';
+import { LazyWorldMap as WorldMapScreen } from './LazyMap';
 import { DecorShop } from './DecorShop';
 import { LookPicker } from './LookPicker';
 import { saveStore } from '../game/progress';

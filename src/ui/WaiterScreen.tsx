@@ -44,8 +44,10 @@ export function WaiterScreen({ link, level, visible, onPause, decor }: { link: W
     view.insets = { left: 20, right: 20, top: 64, bottom: 0 };
     view.fit();
     viewRef.current = view;
+    let pausedDrawn = false;
     const stop = addTick((dt) => {
       if (!visRef.current) return;
+      if (link.isPaused?.()) { if (pausedDrawn) return; pausedDrawn = true; } else pausedDrawn = false;
       const s = link.getState();
       if (!s) return;
       const tut = tutorialHint(s);
