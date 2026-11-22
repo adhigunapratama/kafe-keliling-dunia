@@ -665,3 +665,92 @@ h1, h2, h3 { font-family: var(--font-title); margin: 0; line-height: 1.05; }
   .mg-ing .svg { width: 40px; height: 40px; }
   .mg-ing span { font-size: 10px; line-height: 1; }
 }
+
+/* ============ HP (Samsung A53, iPhone 13, dll.): tinggi layar <= 420 px ============
+   HUD diperkecil supaya seimbang dengan adegan 3D. Semua target sentuh tetap >= 56 px. */
+@media (max-height: 420px) {
+  .icon { width: 24px; height: 24px; }
+  .btn { min-height: 56px; border-radius: 16px; font-size: 15px; padding: 6px 12px; box-shadow: 0 4px 0 var(--sh); }
+  .btn-icon, .topbar .btn-pause { width: 56px; min-width: 56px; min-height: 56px; }
+  .btn-icon .icon { width: 26px; height: 26px; }
+  .pill { height: 40px; font-size: 14px; padding: 0 12px; border-width: 2.5px; }
+  .stars .icon { width: 22px; height: 22px; }
+  .flag { width: 26px; height: 17px; }
+  .pill-flag .flag { width: 34px; height: 22px; }
+  .topbar { gap: 6px; padding-top: calc(6px + var(--safe-t)); }
+  .timer { font-size: 20px; padding: 1px 12px; min-width: 70px; border-radius: 12px; }
+  .badge { min-width: 22px; height: 22px; font-size: 12px; }
+  /* Koki */
+  .ticket-col { width: 118px; top: calc(56px + var(--safe-t)); bottom: 84px; gap: 6px; }
+  .ticket { min-height: 56px; padding: 4px 6px 6px 12px; border-radius: 12px; border-width: 2.5px; gap: 4px; }
+  .ticket .food-icon { width: 30px; height: 30px; }
+  .ticket-body b { font-size: 12px; } .ticket-body small { font-size: 10px; }
+  .steps i { width: 9px; height: 9px; border-width: 1.5px; }
+  .pbar { height: 6px; border-width: 1.5px; }
+  .plates-card { padding: 4px 10px; gap: 6px; border-radius: 14px; border-width: 2.5px; }
+  .plates-card .icon { width: 30px; height: 30px; }
+  .plates-card b { font-size: 20px; } .plates-card small { font-size: 11px; }
+  .plates-card em { font-size: 11px; padding: 2px 6px; }
+  .chef-actions { gap: 6px; bottom: calc(8px + var(--safe-b)); right: calc(8px + var(--safe-r)); }
+  .btn-emoji, .emoji-bar.big .btn-emoji { width: 56px; min-width: 56px; min-height: 56px; border-radius: 16px; }
+  .btn-emoji .icon, .emoji-bar.big .btn-emoji .icon { width: 32px; height: 32px; }
+  .bell-btn { min-height: 60px; font-size: 17px; padding: 6px 14px 6px 10px; }
+  .bell-btn .icon { width: 30px; height: 30px; }
+  .station-label { font-size: 11px; min-height: 24px; padding: 2px 7px; border-width: 2px; border-radius: 10px; }
+  .msg-bubble { top: calc(56px + var(--safe-t)); padding: 4px 12px 4px 8px; }
+  .msg-bubble .icon { width: 30px; height: 30px; }
+  .tut-card { top: calc(54px + var(--safe-t)); left: calc(134px + var(--safe-l)); font-size: 12px; max-width: 260px; }
+  /* Pelayan (Adik): tetap besar, tapi seimbang dengan layar HP */
+  .emoji-bar.big { gap: 8px; }
+  .emoji-bar.big .btn-emoji { width: 66px; min-width: 66px; min-height: 66px; border-radius: 20px; }
+  .emoji-bar.big .btn-emoji .icon { width: 40px; height: 40px; }
+  .waiter-actions { right: calc(8px + var(--safe-r)); bottom: calc(8px + var(--safe-b)); }
+  .carry { left: calc(8px + var(--safe-l)); bottom: calc(8px + var(--safe-b)); }
+  .carry-slot { width: 78px; height: 78px; border-width: 3px; box-shadow: 0 0 0 6px var(--tc), 0 4px 0 6px rgba(43,35,64,.18); }
+  .carry-tray { width: 60px; height: 60px; }
+  .carry-item .food-icon, .carry-item .icon { width: 50px; height: 50px; }
+  .carry-empty { width: 28px; height: 28px; border-width: 3px; }
+  .carry-arrow { width: 30px; height: 30px; }
+  .carry-dest-color, .carry-dest-icon { width: 42px; height: 42px; border-width: 3px; border-radius: 12px; }
+  .bubble { width: 52px; height: 52px; border-width: 3px; border-radius: 18px; box-shadow: 0 0 0 4px var(--pc), 0 4px 0 4px rgba(43,35,64,.15); }
+  .bubble svg { width: 34px; height: 34px; }
+  .bubble::after { bottom: -11px; border-width: 7px; }
+  .bubble-small { width: 40px; height: 40px; } .bubble-small svg { width: 24px; height: 24px; }
+  .bubble-food { width: 40px; height: 40px; border-width: 3px; border-radius: 10px; } .bubble-food svg { width: 30px; height: 30px; }
+  .bubble-noop { width: 38px; height: 38px; } .bubble-noop svg { width: 22px; height: 22px; }
+  .food-banner { font-size: 17px; padding: 4px 12px 4px 8px; gap: 6px; }
+  .food-banner .icon { width: 30px; height: 30px; }
+  .banner-dish { width: 38px; height: 38px; border-width: 3px; } .banner-dish .food-icon { width: 28px; height: 28px; }
+  .tut-icon { padding: 5px 10px; } .tut-icon .icon, .tut-color { width: 42px; height: 42px; }
+  .tut-arrow svg { width: 42px; height: 56px; }
+  .mode-switch { top: calc(52px + var(--safe-t)); }
+  .mode-switch .segmented button { min-height: 30px; font-size: 12px; padding: 2px 8px; }
+  /* Judul */
+  .title-h1 { font-size: 28px; }
+  .bc-main { font-size: 17px; } .bc-main .icon { width: 22px; height: 22px; }
+  .bc-info { font-size: 12px; }
+  .btn-continue, .btn-join { min-height: 56px; }
+  /* Peta, toko, hasil, modal */
+  .map-header { gap: 6px; } .map-header h1 { font-size: 20px; }
+  .map-card { width: min(270px, 55vw); padding: 8px 10px; gap: 4px; border-width: 3px; border-radius: 20px; }
+  .map-card-head b { font-size: 17px; } .map-card-head .flag { width: 36px; height: 24px; }
+  .map-menus .food-icon { width: 32px; height: 32px; }
+  .pin-label { font-size: 11px; padding: 2px 6px 2px 3px; border-width: 2px; }
+  .pin-label .pl-num { min-width: 18px; height: 18px; font-size: 10px; }
+  .shop-grid { grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 6px; }
+  .shop-pic { width: 46px; height: 46px; }
+  .shop-name { font-size: 11px; }
+  .pick-btn { width: 50px; height: 50px; } .pick-btn .icon { width: 28px; height: 28px; }
+  .shop-head h2 { font-size: 22px; }
+  .result-card { padding: 8px 14px 10px; gap: 4px; }
+  .result-card h1 { font-size: 24px; }
+  .result-stars .icon { width: 40px; height: 40px; } .result-stars .icon:nth-child(2) { width: 50px; height: 50px; translate: 0 -6px; }
+  .result-stats b { font-size: 20px; } .result-stats .icon { width: 26px; height: 26px; } .result-stats div { padding: 4px; }
+  .final-banner b { font-size: 24px; } .final-banner .trophy { width: 36px; height: 36px; }
+  .code-boxes span { width: 54px; height: 66px; font-size: 42px; border-radius: 14px; }
+  .key { width: 76px; height: 62px; min-height: 62px; font-size: 30px; border-radius: 18px; }
+  .role-card { width: 136px; padding: 8px; } .role-card b { font-size: 22px; } .role-icon { width: 48px; height: 48px; }
+  .modal { padding: 12px 14px; } .modal h2 { font-size: 24px; }
+  .mg-head h2 { font-size: 20px; } .mg-head .food-icon, .mg-head .icon { width: 34px; height: 34px; }
+  .mg-close { width: 48px; min-width: 48px; min-height: 48px; }
+}

@@ -62,8 +62,9 @@ for (const name of ['iPhone 13 landscape', 'Pixel 7 landscape']) {
   ok(await page.evaluate(() => window.__kkd.session.sim.state.tickets[0]?.step === 1), 'swipe SENTUH memotong tomat sampai selesai');
   // tombol cukup besar (min 56 px; tombol emoji Adik min 84 px)
   await page.evaluate(() => window.__kkd.setMode('waiter')); await page.waitForTimeout(300);
+  const innerH = await page.evaluate(() => innerHeight);
   const sizes = await page.evaluate(() => [...document.querySelectorAll('.pane-waiter .btn-emoji')].map((b) => Math.min(b.getBoundingClientRect().width, b.getBoundingClientRect().height)));
-  ok(sizes.length === 3 && sizes.every((s) => s >= 84), `tombol emoji Adik >= 84 px (${sizes.map(Math.round).join(', ')})`);
+  ok(sizes.length === 3 && sizes.every((s) => s >= (innerH <= 420 ? 64 : 84)), `tombol emoji Adik >= ${innerH <= 420 ? 64 : 84} px (${sizes.map(Math.round).join(', ')})`);
   const small = await page.evaluate(() => [...document.querySelectorAll('.screen button')].filter((b) => b.offsetParent && !b.closest('.segmented') && !b.closest('.mode-switch')).map((b) => { const r = b.getBoundingClientRect(); return Math.min(r.width, r.height); }).filter((s) => s > 0 && s < 44));
   ok(small.length === 0, `semua tombol yang terlihat >= 44 px (${small.length} lebih kecil)`);
   await ctx.close();

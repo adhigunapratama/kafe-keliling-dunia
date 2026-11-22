@@ -114,7 +114,7 @@ try {
 
   // 8. tablet Adik dimuat ulang -> otomatis masuk lagi tanpa mengetik kode
   await waiter.reload();
-  await waiter.waitForSelector('.waiter-screen', { timeout: 10000 });
+  await waiter.waitForSelector('.waiter-screen', { timeout: 25000 }); // VM tanpa GPU: muat ulang bisa lambat
   ok(true, 'tablet Adik dimuat ulang -> langsung kembali ke permainan');
   await bot(4);
 

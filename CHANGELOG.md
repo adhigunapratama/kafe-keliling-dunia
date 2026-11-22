@@ -9,6 +9,7 @@ Format: versi · tanggal · ringkasan. Nomor versi tampil di Pengaturan.
 - Hemat baterai: render berhenti saat game dijeda; dapur dirender lebih jarang di balik mini-game.
 - Geometri tokoh tamu dibuang bersama adegan (tidak menumpuk saat bermain lama).
 - Peta Dunia dimuat saat dibuka; unduhan awal ±820 KB (±240 KB gzip), seluruh game ±1,4 MB ter-cache untuk offline.
+- **Ukuran HUD untuk HP** (mis. Samsung A53, iPhone 13; tinggi layar ≤ 420 px): tombol, kartu tiket, gelembung tamu, slot Bawaan, label stasiun, peta, toko, dan layar hasil diperkecil supaya seimbang dengan adegan 3D. Target sentuh tetap ≥ 56 px; tombol emoji Adik 66 px di HP (84 px di tablet).
 - **Layar HP pendek:** layar judul, papan mini-game, dan daftar bahan menyesuaikan tinggi layar; bahan berikutnya otomatis terlihat.
 - Gelembung di atas kepala tamu kini juga bisa diketuk (lebih mudah untuk Adik).
 - Narasi iOS: daftar suara dimuat ulang saat siap.
