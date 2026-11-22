@@ -60,7 +60,7 @@ async function run(name, viewport) {
   await page.screenshot({ path: `${out}/${name}-5-antar.png` });
   await page.evaluate(() => window.__kkd.setMode('chef'));
   // percepat sampai selesai
-  await page.evaluate(() => { const { session } = window.__kkd; session.sim.state.t = session.sim.state.duration - 0.5; });
+  await page.evaluate(() => { const { session } = window.__kkd; session.sim.state.tutorial = false; session.sim.state.t = session.sim.state.duration - 0.5; });
   await page.waitForTimeout(3500);
   await page.screenshot({ path: `${out}/${name}-6-hasil.png` });
   console.log(name, 'fps:', await page.evaluate(() => document.querySelector('.fps')?.textContent ?? '-'));

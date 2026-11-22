@@ -440,3 +440,76 @@ h1, h2, h3 { font-family: var(--font-title); margin: 0; line-height: 1.05; }
 .test-note { border: 0; background: transparent; cursor: pointer; padding: 6px 0; min-height: 44px; font: inherit; font-weight: 800; }
 .wait-text { color: var(--text2); }
 .net-play { position: absolute; inset: 0; }
+
+/* ============ Tahap 3: mini-game baru ============ */
+/* timing: oven & panci rebus */
+.mg-pot-panggang { border-radius: 26px; background: #2E2E3A; box-shadow: inset 0 0 0 14px #2E2E3A, 0 8px 0 rgba(43,35,64,.2); }
+.mg-pot-panggang::before { border-radius: 16px; background: radial-gradient(circle at 50% 60%, #FFD27A 0%, #FF9F43 70%, #E0701F 100%); animation: glow 1s infinite alternate; }
+.mg-pot-rebus::before { background: radial-gradient(circle at 30% 40%, rgba(255,255,255,.8) 0 6px, transparent 7px), radial-gradient(circle at 70% 60%, rgba(255,255,255,.8) 0 5px, transparent 6px), radial-gradient(circle at 50% 30%, rgba(255,255,255,.8) 0 4px, transparent 5px), #BFE6F7; }
+@keyframes glow { from { filter: brightness(1); } to { filter: brightness(1.15); } }
+/* seret: tabur */
+.mg-scatter .mg-plate { width: min(66%, 330px); }
+.mg-base { left: 50%; top: 50%; bottom: auto !important; width: 92% !important; translate: -50% -50%; }
+.mg-topping { position: absolute; width: 30%; aspect-ratio: 1; translate: -50% -50%; animation: drop .35s cubic-bezier(.3,1.6,.6,1); filter: drop-shadow(0 3px 2px rgba(43,35,64,.25)); }
+.mg-topping svg { width: 100%; height: 100%; }
+/* aduk */
+.mg-aduk { position: absolute; inset: 0; display: grid; place-items: center; touch-action: none; }
+.mg-bowl { --mix: 0; position: relative; width: min(62%, 320px); aspect-ratio: 1; border-radius: 50%; background: #fff; border: 5px solid var(--ink); box-shadow: inset 0 0 0 20px #E9E4F4, 0 8px 0 rgba(43,35,64,.2); display: grid; place-items: center; overflow: hidden; }
+.mg-swirl { width: 66%; aspect-ratio: 1; border-radius: 50%; filter: saturate(calc(1 - var(--mix) * .4)) blur(calc(var(--mix) * 1px)); }
+.mg-swirl svg { width: 100%; height: 100%; }
+.mg-spoon { position: absolute; left: 58%; top: 10%; width: 14px; height: 46%; background: #C7CCD6; border: 3px solid var(--ink); border-radius: 8px; rotate: 25deg; transform-origin: bottom; pointer-events: none; }
+/* gulung */
+.mg-gulung { position: absolute; inset: 0; display: grid; place-items: center; touch-action: none; }
+.mg-mat { position: relative; width: min(46%, 260px); aspect-ratio: .8; background: repeating-linear-gradient(0deg, #C9A86A 0 12px, #B08A50 12px 15px); border: 4px solid var(--ink); border-radius: 18px; box-shadow: 0 8px 0 rgba(43,35,64,.2); overflow: hidden; }
+.mg-mat-adonan { background: #E2B07A; }
+.mg-sheet { position: absolute; inset: 8%; transition: clip-path .3s; }
+.mg-sheet svg { width: 100%; height: 100%; }
+.mg-roll { position: absolute; left: 6%; right: 6%; bottom: 0; height: 14%; background: linear-gradient(#5A6E5B, #2E3B2F); border: 3px solid var(--ink); border-radius: 30px; transition: bottom .3s, height .3s; opacity: 0; }
+.mg-mat-adonan .mg-roll { background: linear-gradient(#F3DDB0, #E8A85A); }
+.mg-up-arrow, .mg-down-arrow { position: absolute; right: 14%; top: 30%; width: 0; height: 0; border: 22px solid transparent; border-bottom: 34px solid rgba(43,35,64,.35); animation: bob 1s infinite; pointer-events: none; transition: opacity .3s; }
+.mg-down-arrow { border-bottom: 22px solid transparent; border-top: 34px solid rgba(43,35,64,.35); }
+/* lipat */
+.mg-lipat { position: absolute; inset: 0; display: grid; place-items: center; touch-action: none; perspective: 900px; }
+.mg-fold { position: relative; width: min(50%, 280px); aspect-ratio: 1; }
+.mg-fold.pop { animation: popin .3s; }
+.mg-fold-bottom, .mg-fold-top { position: absolute; left: 0; right: 0; height: 50%; overflow: hidden; }
+.mg-fold-bottom { bottom: 0; }
+.mg-fold-bottom svg { width: 100%; height: 200%; translate: 0 -50%; }
+.mg-fold-top { top: 0; transform-origin: 50% 100%; backface-visibility: visible; filter: brightness(1.06); }
+.mg-fold-top svg { width: 100%; height: 200%; }
+/* tarik */
+.mg-tarik { position: absolute; inset: 0; display: grid; place-items: center; touch-action: none; }
+.mg-noodle { --w: 40%; display: flex; flex-direction: column; justify-content: center; gap: 3px; width: var(--w); min-height: 40%; padding: 10px; transition: width .35s cubic-bezier(.3,1.6,.6,1); }
+.mg-noodle i { display: block; height: 8px; border-radius: 4px; background: #F4D58D; border: 2px solid #C9963F; }
+.mg-noodle.stretch { animation: stretch .35s; }
+@keyframes stretch { 50% { transform: scaleX(1.12); } }
+
+/* ============ Tahap 3: tutorial ============ */
+.tut-card { position: absolute; left: 50%; top: calc(64px + var(--safe-t)); translate: -50% 0; z-index: 6; display: flex; align-items: center; gap: 10px; max-width: min(440px, 60%); padding: 8px 16px 8px 10px; background: #FFF6DA; border: 3px solid var(--ink); border-radius: 20px; box-shadow: 0 5px 0 var(--yellow-d); font-size: 16px; line-height: 1.2; animation: dropin .4s cubic-bezier(.3,1.5,.6,1); }
+.tut-card .icon { width: 36px; height: 36px; }
+.tut-card.done { background: var(--green-bg); color: var(--green); box-shadow: 0 5px 0 #9BD8B5; }
+.test-mode.mode-both .tut-card { top: calc(120px + var(--safe-t)); }
+.tut-icon { position: absolute; left: 50%; top: calc(8px + var(--safe-t)); translate: -50% 0; z-index: 6; display: flex; gap: 6px; padding: 8px 14px; background: #FFF6DA; border: 4px solid var(--ink); border-radius: 26px; box-shadow: 0 6px 0 var(--yellow-d); animation: dropin .4s cubic-bezier(.3,1.5,.6,1), bob 1.4s .4s infinite; }
+.tut-icon .icon { width: 58px; height: 58px; }
+.tut-icon.done { background: var(--green-bg); box-shadow: 0 6px 0 #9BD8B5; }
+.tut-color { display: block; width: 58px; height: 58px; border-radius: 16px; border: 4px solid var(--ink); }
+.tut-arrow { translate: -50% -100%; pointer-events: none; animation: tutbounce .8s infinite ease-in-out; filter: drop-shadow(0 4px 0 rgba(43,35,64,.25)); }
+.tut-arrow svg { width: 58px; height: 78px; display: block; }
+@keyframes tutbounce { 0%, 100% { margin-top: 0; } 50% { margin-top: -16px; } }
+.station-label.tut { background: var(--yellow); box-shadow: 0 0 0 6px rgba(255,194,51,.6), 0 3px 0 rgba(43,35,64,.2); z-index: 3; }
+.station-label.tut::before { content: ''; position: absolute; left: 50%; bottom: calc(100% + 6px); translate: -50% 0; border-left: 16px solid transparent; border-right: 16px solid transparent; border-top: 24px solid var(--red); animation: tutbounce .8s infinite ease-in-out; }
+.tut-target { box-shadow: 0 6px 0 var(--sh), 0 0 0 8px rgba(255,194,51,.85) !important; animation: bellpulse .8s infinite, wiggle .8s infinite; }
+
+.mg-topping.big { width: 62%; z-index: 1 !important; animation: popin .3s; filter: none; }
+/* panel sempit (mode dua layar di layar kecil) */
+.test-mode .pane { container-type: inline-size; }
+@container (max-width: 620px) {
+  .btn-emoji { width: 46px; min-width: 46px; min-height: 46px; border-radius: 14px; }
+  .btn-emoji .icon { width: 28px; height: 28px; }
+  .emoji-bar.big .btn-emoji { width: 64px; min-width: 64px; min-height: 64px; }
+  .emoji-bar.big .btn-emoji .icon { width: 40px; height: 40px; }
+  .plates-card small { display: none; }
+  .plates-card { padding: 6px 10px; }
+  .bell-btn { padding: 8px 12px; font-size: 18px; }
+  .tut-card { max-width: 70%; font-size: 14px; }
+}

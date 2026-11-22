@@ -5,17 +5,26 @@ import { el, type MinigameFactory } from './types';
 /** SERET-BAHAN: seret bahan dari grid kanan ke piring/roti sesuai urutan resep. */
 export const seretBahan: MinigameFactory = (h) => {
   if (h.step.type !== 'seret-bahan') throw new Error('langkah bukan seret-bahan');
-  const { base, items, distractors = [] } = h.step;
-  const wrap = el('div', 'mg-seret', '', h.area);
+  const { base, items, distractors = [], layout = 'stack' } = h.step;
+  const scatter = layout === 'scatter';
+  const wrap = el('div', `mg-seret ${scatter ? 'mg-scatter' : ''}`, '', h.area);
   const plate = el('div', 'mg-plate', '', wrap);
   const stack = el('div', 'mg-stack', '', plate);
-  const addLayer = (id: string, i: number) => {
-    const l = el('div', 'mg-layer', foodIcon(INGREDIENTS[id]?.icon ?? ''), stack);
-    l.style.bottom = `${8 + i * 13}%`;
+  const addLayer = (id: string, i: number, at?: [number, number]) => {
+    const ing = INGREDIENTS[id];
+    const big = scatter && i > 0 && !!ing?.topIcon;
+    const l = el('div', scatter && i > 0 ? `mg-topping ${big ? 'big' : ''}` : 'mg-layer', foodIcon((scatter && i > 0 ? ing?.topIcon : undefined) ?? ing?.icon ?? ''), stack);
+    if (big) { l.style.left = '50%'; l.style.top = '50%'; }
+    else if (scatter && i > 0 && at) {
+      l.style.left = `${at[0] * 100}%`; l.style.top = `${at[1] * 100}%`;
+      l.style.rotate = `${((i * 67) % 50) - 25}deg`;
+    } else if (scatter) { l.classList.add('mg-base'); }
+    else l.style.bottom = `${8 + i * 13}%`;
     l.style.zIndex = String(i + 1);
     return l;
   };
   addLayer(base, 0);
+  const baseName = h.t(`ing.${base}`);
   // grid bahan (acak, tapi stabil)
   const pool = [...new Set([...items, ...distractors])];
   pool.sort((a, b) => (a.charCodeAt(1) * 7 + a.length) % 5 - (b.charCodeAt(1) * 7 + b.length) % 5);
@@ -29,7 +38,9 @@ export const seretBahan: MinigameFactory = (h) => {
   let idx = 0, mistakes = 0;
   const refresh = () => {
     btns.forEach((b, id) => b.classList.toggle('next', id === items[idx]));
-    if (idx < items.length) h.setHint(h.t('mg.dragHint', { item: h.t(`ing.${items[idx]}`), n: idx, total: items.length }));
+    if (idx < items.length) h.setHint(scatter
+      ? h.t('mg.scatterHint', { item: h.t(`ing.${items[idx]}`), base: baseName, n: idx, total: items.length })
+      : h.t('mg.dragHint', { item: h.t(`ing.${items[idx]}`), n: idx, total: items.length }));
   };
   refresh();
 
@@ -57,7 +68,12 @@ export const seretBahan: MinigameFactory = (h) => {
     const g = ghost; ghost = null;
     if (inside && dragId === items[idx]) {
       g.remove();
-      const l = addLayer(dragId, idx + 1);
+      // posisi jatuh relatif terhadap piring (dibatasi di dalam lingkaran)
+      let fx = (e.clientX - pr.left) / pr.width - 0.5, fy = (e.clientY - pr.top) / pr.height - 0.5;
+      const d = Math.hypot(fx, fy), maxD = 0.28;
+      if (d > maxD) { fx *= maxD / d; fy *= maxD / d; }
+      if (d < 0.05) { const a = idx * 2.4; fx = Math.cos(a) * 0.18; fy = Math.sin(a) * 0.18; }
+      const l = addLayer(dragId, idx + 1, [fx + 0.5, fy + 0.5]);
       l.classList.add('drop');
       idx++;
       h.sfx('plate');

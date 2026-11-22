@@ -1,5 +1,6 @@
 import { t, setLang } from '../data/i18n';
 import { audio } from '../engine/audio';
+import { setNarration } from '../engine/speech';
 import type { Preset } from '../engine/quality';
 import { settings } from './settings';
 import { useStore } from './store';
@@ -35,6 +36,7 @@ export function SettingsModal({ onClose }: { onClose: () => void }) {
         <Toggle label={t('common.sound')} on={!s.muted} onChange={(v) => { settings.update({ muted: !v }); audio.setMuted(!v); }} />
         <Toggle label={t('settings.music')} on={s.music} onChange={(v) => { settings.update({ music: v }); audio.setMusicOn(v); }} />
         <Toggle label={t('settings.relaxed')} sub={t('settings.relaxedInfo')} on={s.relaxed} onChange={(v) => settings.update({ relaxed: v })} />
+        <Toggle label={t('settings.narration')} on={s.narration} onChange={(v) => { settings.update({ narration: v }); setNarration(v); }} />
         <Toggle label={t('settings.guide')} on={s.guide} onChange={(v) => settings.update({ guide: v })} />
         <Toggle label={t('settings.fps')} on={s.showFps} onChange={(v) => settings.update({ showFps: v })} />
         <p class="version">{t('settings.version', { v: __APP_VERSION__ })}</p>

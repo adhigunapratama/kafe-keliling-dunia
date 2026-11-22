@@ -17,6 +17,9 @@ import { Btn, FoodIcon, Icon } from './components';
 import { TopBar, EmojiBar, MessageBubble } from './hud';
 import { MinigameOverlay, type OpenGame } from './MinigameOverlay';
 import { reportFrame } from './fps';
+import { tutorialHint } from '../game/tutorial';
+import { say, sayHint } from '../engine/speech';
+import { TutorialCard } from './tutorialUi';
 
 export function ChefScreen({ session, visible, onPause }: { session: HostSession; visible: boolean; onPause: () => void }) {
   const host = useRef<HTMLDivElement>(null);
@@ -60,7 +63,8 @@ export function ChefScreen({ session, visible, onPause }: { session: HostSession
         let badge = '';
         if (stn.id === 'wastafel' && s.sink > 0) badge = `<b class="badge">${s.sink}</b>`;
         if (stn.id === 'saji' && s.pass.length) badge = `<b class="badge badge-yellow">${s.pass.length}</b>`;
-        const lab = labels.put('st-' + stn.id, x, y, `<span>${t(`station.${stn.id}`)}</span>${badge}`, `station-label ${active.includes(stn.id) ? 'active' : ''}`);
+        const tutSt = tutorialHint(s)?.chef?.station;
+        const lab = labels.put('st-' + stn.id, x, y, `<span>${t(`station.${stn.id}`)}</span>${badge}`, `station-label ${active.includes(stn.id) ? 'active' : ''} ${tutSt === stn.id ? 'tut' : ''}`);
         lab.dataset.station = stn.id;
       }
       labels.end();
@@ -122,6 +126,14 @@ export function ChefScreen({ session, visible, onPause }: { session: HostSession
   }
 
   const unannounced = s.pass.filter((d) => !d.announced).length;
+  const tut = tutorialHint(s);
+  const tutKey = tut ? tut.step : '';
+  const lastTut = useRef('');
+  useEffect(() => {
+    if (!tut || tutKey === lastTut.current) return;
+    lastTut.current = tutKey;
+    if (tut.step === 'done') say('voice.done'); else if (tut.chef?.voice) sayHint(tut.chef.voice);
+  }, [tutKey]);
   const cooking = tickets.length;
   const plateLow = s.clean <= 1 && (cooking > 0 || s.clean === 0);
   const now = performance.now();
@@ -159,9 +171,10 @@ export function ChefScreen({ session, visible, onPause }: { session: HostSession
         {plateLow && <em>{t('hud.platesLow')}</em>}
       </div>
       <MessageBubble msg={msg} from="adik" />
+      {tut && !game && <TutorialCard step={tut.step} text={tut.step === 'done' ? t('tut.done') : tut.chef ? t(tut.chef.text, { station: tut.chef.station && tut.chef.station !== 'bell' ? t(`station.${tut.chef.station}`) : '' }) : ''} />}
       <div class="chef-actions">
         <EmojiBar kinds={['thumb', 'heart', 'bolt']} onSend={(k) => { session.chefEmoji(k); audio.play('pop'); }} />
-        <Btn color="red" big class={`bell-btn ${unannounced ? 'pulse' : ''}`} onClick={ringBell} sound={false}>
+        <Btn color="red" big class={`bell-btn ${unannounced ? 'pulse' : ''} ${tut?.chef?.station === 'bell' ? 'tut-target' : ''}`} onClick={ringBell} sound={false}>
           <Icon name="bell" /><span>{t('hud.bell')}</span>{unannounced > 0 && <b class="badge badge-yellow">{unannounced}</b>}
         </Btn>
       </div>

@@ -8,7 +8,7 @@ export const DINING = {
   /** Pintu di dinding belakang (z=-5). */
   door: { x: 3.7, z: -4.97, spawn: [3.7, -4.7] as [number, number], stand: [2.9, -2.9] as [number, number] },
   /** Tempat antre tamu, dari depan pintu. */
-  queue: [[3.7, -3.5], [3.75, -2.7], [3.8, -1.9]] as [number, number][],
+  queue: [[3.7, -3.6], [3.85, -2.5], [4.0, -1.4]] as [number, number][],
   waiterStart: [-3.0, -1.4] as [number, number],
   /** Jarak kursi dari pusat meja (kursi di kiri & kanan meja, sumbu x). */
   chairOffset: 1.25,

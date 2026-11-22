@@ -1,4 +1,6 @@
 import { HostSession } from '../game/session';
+import { getLevel } from '../data/levels';
+import { loadProgress } from '../game/progress';
 import type { CafeState } from '../game/types';
 import { Store } from '../ui/store';
 import { RoomClient, type NetState } from './client';
@@ -74,7 +76,7 @@ export class RoomHost {
   /** Mulai (atau ulang) level. */
   start(level: number, relaxed: boolean): HostSession {
     this.offSession?.();
-    const session = new HostSession(level, relaxed);
+    const session = new HostSession(level, relaxed, undefined, !!getLevel(level).tutorial && !loadProgress().best[level]);
     this.session = session;
     const local = session.localWaiterLink();
     const off = local.onMessage((m) => {

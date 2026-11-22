@@ -2,6 +2,17 @@
 
 Format: versi · tanggal · ringkasan. Nomor versi tampil di Pengaturan.
 
+## 0.3.0 · 2026-11-22 · Tahap 3 — isi level 1–5
+
+- Level 2–5 bisa dimainkan: **Italia** (pizza, spaghetti), **Meksiko** (taco, nachos), **Prancis** (croissant, crêpes), **Jepang** (sushi, ramen). Level 3–5: 3 meja, rombongan 1–2 tamu.
+- Mini-game baru: **aduk** (putar jari), **gulung** (swipe panjang ke atas), **lipat**, **tarik** (dipakai level berikutnya), seret-bahan mode **tabur** (topping jatuh di titik yang diseret), tampilan oven dan panci rebus untuk timing.
+- 8 model makanan 3D prosedural baru dan ±25 ikon bahan/menu SVG baru.
+- Dekorasi khas tiap negara: warna dinding & lantai, untaian bendera, kaktus, lampion, bambu, kotak bunga, poster (matahari, menara, ombak), lampu dinding.
+- **Tutorial Level 1** (main pertama kali) memandu kedua layar langkah demi langkah: panah besar memantul + kartu bergambar di layar Adik, kartu petunjuk + stasiun berpanah di layar Kakak, dan suara. Selama tutorial hanya satu tamu, tamu tidak kehilangan kesabaran, dan timer berhenti.
+- **Narasi suara** (Web Speech API, Bahasa Indonesia/Inggris): "Makanan siap!", "Meja merah!", dst. Bisa dimatikan di Pengaturan; diam bila perangkat tidak punya suara bahasa itu.
+- Musik prosedural per negara (tangga nada & tempo berbeda) — sudah ada sejak Tahap 1, kini terdengar di 5 negara.
+- Antrean tamu lebih renggang; hanya rombongan terdepan yang menampilkan gelembung kursi.
+
 ## 0.2.0 · 2026-11-22 · Tahap 2 — main berdua
 
 - Server ruangan Cloudflare Worker + Durable Object (`KafeRoom`, backend SQLite, WebSocket Hibernation API, ping/pong otomatis tanpa membangunkan objek, kedaluwarsa otomatis setelah 2 jam tidak aktif).
