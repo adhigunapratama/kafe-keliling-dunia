@@ -67,8 +67,8 @@ Stasiun dapur yang muncul di level dihitung otomatis dari resep menu level itu.
    warna bendera (`colors`), tema dapur & ruang makan (warna dinding, lantai),
    hiasan (`decorKitchen`, `decorDining`: `bunting` untaian bendera, `poster`
    (bentuk star/circle/stripes/sun/tower/wave), `plant`, `cactus`, `bamboo`, `lantern`,
-   `flowerbox`, `lamp`). Tanaman, kaktus, dan bambu otomatis menjadi penghalang jalan.
-   dan gaya musik (tangga nada, tempo).
+   `flowerbox`, `lamp`), dan gaya musik (tangga nada, tempo).
+   Tanaman, kaktus, dan bambu otomatis menjadi penghalang jalan.
 2. **Bendera** di `src/data/flags.ts` (SVG sederhana 30×20).
 3. **Level** di `src/data/levels.ts` → `LEVELS`. Semua angka kesulitan ada di sini:
    jumlah meja (2–5), jeda kedatangan, kesabaran per fase, ukuran rombongan, jumlah
