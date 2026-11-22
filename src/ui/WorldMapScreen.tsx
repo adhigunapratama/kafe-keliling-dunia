@@ -25,7 +25,7 @@ export function pinInfos(p: Progress): PinInfo[] {
 }
 
 /** Layar Peta Dunia 3D: geser & pinch, ketuk pin untuk kartu level. */
-export function WorldMapScreen({ onBack, onPlay }: { onBack: () => void; onPlay: (level: number) => void }) {
+export function WorldMapScreen({ onBack, onPlay, onDecorate }: { onBack: () => void; onPlay: (level: number) => void; onDecorate?: () => void }) {
   const host = useRef<HTMLDivElement>(null);
   const viewRef = useRef<WorldMapView | null>(null);
   const p = useStore(saveStore);
@@ -108,7 +108,7 @@ export function WorldMapScreen({ onBack, onPlay }: { onBack: () => void; onPlay:
         <span class="grow" />
         <span class="pill"><Icon name="star" /> {totalStars(p)} / {LEVELS.length * 3}</span>
         <span class="pill"><Icon name="coin" /> {p.coins}</span>
-        <Btn color="blue" disabled title={t('map.soon')}><Icon name="palette" /> {t('result.decorate')}</Btn>
+        <Btn color="blue" disabled={!onDecorate} onClick={onDecorate}><Icon name="palette" /> {t('result.decorate')}</Btn>
       </div>
       {failed && <div class="net-banner err"><Icon name="sad" /> {t('family.network')}</div>}
       {L && c && (

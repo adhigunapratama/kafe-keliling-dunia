@@ -154,7 +154,17 @@ class MusicPlayer {
       this.nextT += spb;
     }
   }
-  private note(f: number, t: number, d: number, type: OscillatorType, v: number) {
+  private note(f: number, t: number, d: number, type: OscillatorType | 'bell', v: number) {
+    if (type === 'bell') {
+      // bunyi logam bernada seperti bonang/saron: parsial tidak harmonis yang cepat meluruh
+      for (const [mul, vol, dec] of [[1, 1, 1.4], [2.76, 0.35, 0.6], [5.4, 0.12, 0.3]] as const) {
+        const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+        o.type = 'sine'; o.frequency.value = f * mul;
+        g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v * vol * 1.4, t + 0.005); g.gain.exponentialRampToValueAtTime(0.0001, t + d * 2.2 * dec);
+        o.connect(g); g.connect(this.out); o.start(t); o.stop(t + d * 3);
+      }
+      return;
+    }
     const o = this.ctx.createOscillator(), g = this.ctx.createGain();
     o.type = type; o.frequency.value = f;
     g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + d);

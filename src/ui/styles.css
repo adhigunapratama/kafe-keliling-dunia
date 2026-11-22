@@ -570,3 +570,62 @@ h1, h2, h3 { font-family: var(--font-title); margin: 0; line-height: 1.05; }
   .tut-card { left: calc(150px + var(--safe-l)); translate: 0 0; top: calc(58px + var(--safe-t)); max-width: 300px; font-size: 13px; padding: 6px 10px 6px 8px; opacity: .96; }
   .tut-card .icon { width: 28px; height: 28px; }
 }
+
+.mg-pot-kukus { border-radius: 40px 40px 24px 24px; background: #D9B77A; box-shadow: inset 0 0 0 12px #E8C58C, 0 8px 0 rgba(43,35,64,.2); }
+.mg-pot-kukus::before { background: repeating-linear-gradient(0deg, #F7E8C8 0 10px, #EFDCB2 10px 12px); border-radius: 28px 28px 14px 14px; }
+
+/* ============ Tahap 5: perayaan tamat ============ */
+.result-screen.final { background: radial-gradient(circle at 50% 30%, #FFE9A8 0%, #FFC233 45%, #E2231A 130%); }
+.final-banner { display: flex; align-items: center; gap: 10px; background: var(--red); color: #fff; border: 4px solid var(--ink); border-radius: 22px; padding: 6px 16px; box-shadow: 0 6px 0 var(--red-d); animation: popin .5s cubic-bezier(.3,1.6,.6,1), wiggle 1.2s 0.5s 3; }
+.final-banner b { display: block; font-family: var(--font-title); font-size: 34px; line-height: 1; }
+.final-banner span { font-size: 16px; }
+.final-banner .trophy { width: 50px; height: 50px; animation: bob 1s infinite; }
+.result-screen.final .confetti i:nth-child(3n) { border-radius: 50%; }
+
+/* ============ Tahap 5: Hias Kafe & Tokohku ============ */
+.shop-back { position: absolute; inset: 0; z-index: 45; background: rgba(43,35,64,.55); display: grid; place-items: center; padding: calc(8px + var(--safe-t)) calc(8px + var(--safe-r)) calc(8px + var(--safe-b)) calc(8px + var(--safe-l)); animation: fadein .2s; }
+.shop { width: min(1000px, 100%); max-height: 100%; background: #fff; border: 4px solid var(--ink); border-radius: 26px; box-shadow: 0 8px 0 rgba(0,0,0,.25); display: flex; flex-direction: column; overflow: hidden; animation: popin .3s cubic-bezier(.3,1.4,.6,1); }
+.shop-head { display: flex; align-items: center; gap: 10px; padding: 8px 10px 4px 14px; }
+.shop-head h2 { font-size: 28px; color: var(--blue); }
+.shop-head .icon { width: 34px; height: 34px; }
+.shop-hint { display: flex; align-items: center; gap: 6px; margin: 0; padding: 4px 14px 8px; color: var(--text2); font-size: 15px; }
+.pick-dot { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; border: 3px solid var(--ink); }
+.pick-dot .icon { width: 24px; height: 24px; }
+.pick-dot.chef { background: #F7C9BF; } .pick-dot.waiter { background: #C4DBF7; }
+.shop-grid { flex: 1; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; padding: 4px 12px 14px; }
+.shop-card { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px; background: var(--panel2); border: 3px solid #DAD5E8; border-radius: 20px; }
+.shop-card.picked { border-color: var(--yellow); background: #FFF6DA; }
+.shop-card.owned { background: #fff; }
+.shop-card.placed { border-color: #2E9E5B; background: var(--green-bg); }
+.shop-card.bought { animation: pop .6s; border-color: #2E9E5B; }
+.shop-card.poor { opacity: .55; }
+.shop-pic { width: 76px; height: 76px; }
+.shop-name { font-size: 14px; text-align: center; line-height: 1.1; min-height: 2.2em; display: grid; place-items: center; }
+.shop-price { display: flex; align-items: center; gap: 3px; font-family: var(--font-title); font-size: 20px; }
+.shop-price .icon { width: 22px; height: 22px; }
+.shop-picks { display: flex; gap: 8px; }
+.pick-btn { width: 60px; height: 60px; border-radius: 50%; border: 3px solid var(--ink); display: grid; place-items: center; cursor: pointer; box-shadow: 0 4px 0 rgba(43,35,64,.25); padding: 0; transition: transform .06s; }
+.pick-btn .icon { width: 36px; height: 36px; }
+.pick-btn.chef { background: #fff; } .pick-btn.waiter { background: #fff; }
+.pick-btn.chef.on { background: var(--red); box-shadow: 0 0 0 4px rgba(201,67,42,.35), 0 4px 0 var(--red-d); }
+.pick-btn.waiter.on { background: var(--blue); box-shadow: 0 0 0 4px rgba(31,111,209,.35), 0 4px 0 var(--blue-d); }
+.pick-btn.on .icon svg path, .pick-btn.on .icon svg circle, .pick-btn.on .icon svg rect { stroke: #fff; }
+.pick-btn:disabled { cursor: default; }
+.pick-btn:active:not(:disabled) { transform: translateY(3px); }
+.shop-place { min-height: 56px; font-size: 15px; }
+.shop-place .icon { width: 26px; height: 26px; }
+.shop-place.on .icon svg path { stroke: #fff; }
+.lobby-shop .icon { width: 28px; height: 28px; }
+.look-btn { margin-top: 6px; display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 4px 12px; border-radius: 14px; border: 3px solid var(--ink); background: #fff; color: var(--ink); font: inherit; font-size: 14px; cursor: pointer; }
+.look-btn .icon { width: 24px; height: 24px; }
+.look-btn.big { width: 84px; height: 84px; justify-content: center; border-radius: 24px; }
+.look-btn.big .icon { width: 52px; height: 52px; }
+.look-modal { position: relative; min-width: min(560px, 100%); }
+.look-done { position: absolute; right: 12px; top: 12px; }
+.look-body { display: flex; gap: 16px; align-items: center; }
+.look-preview { width: 120px; height: 135px; flex: none; }
+.look-rows { display: flex; flex-direction: column; gap: 10px; }
+.look-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.swatch { width: 56px; height: 56px; border-radius: 50%; border: 3px solid var(--ink); cursor: pointer; padding: 0; box-shadow: 0 3px 0 rgba(43,35,64,.2); }
+.swatch.on { box-shadow: 0 0 0 5px var(--yellow), 0 3px 0 rgba(43,35,64,.2); }
+@media (max-height: 460px) { .swatch { width: 46px; height: 46px; } .look-preview { width: 90px; height: 100px; } .shop-pic { width: 60px; height: 60px; } .pick-btn { width: 56px; height: 56px; } }

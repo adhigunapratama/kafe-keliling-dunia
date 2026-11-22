@@ -1,6 +1,7 @@
 import { HostSession } from '../game/session';
 import { getLevel } from '../data/levels';
-import { loadProgress } from '../game/progress';
+import { loadProgress, saveProgress } from '../game/progress';
+import { NO_PICKS, shopPick, togglePlace, type ShopPicks, type ShopRole } from '../game/shop';
 import type { CafeState } from '../game/types';
 import { Store } from '../ui/store';
 import { RoomClient, type NetState } from './client';
@@ -19,6 +20,8 @@ export class RoomHost {
   readonly client: RoomClient<WaiterMsg | ServerMsg, HostMsg>;
   readonly room: Store<HostRoomState>;
   session: HostSession | null = null;
+  /** Hias Kafe (dibagi dengan tablet Adik). */
+  readonly shop = new Store<{ open: boolean; picks: ShopPicks; bought: string | null }>({ open: false, picks: { ...NO_PICKS }, bought: null });
   private offSession: (() => void) | null = null;
   private snapTimer = 0;
   private heartbeat = 0;
@@ -42,6 +45,8 @@ export class RoomHost {
     if (m.t === 'welcome' || m.t === 'error') return;
     if (m.t === 'pause') { this.setPaused(m.on); return; }
     if (m.t === 'hello') { this.resendPhase(); return; }
+    if (m.t === 'shopPick') { this.shopPick('waiter', m.id); return; }
+    if (m.t === 'shopPlace') { this.shopPlace(m.id); return; }
     this.session?.handleWaiter(m);
   }
 
@@ -62,10 +67,25 @@ export class RoomHost {
     const r = this.room.get();
     if (r.phase === 'lobby') this.client.send({ t: 'lobby', level: r.level, relaxed: r.relaxed });
     else if (r.phase === 'play' && this.session) {
-      this.client.send({ t: 'start', level: r.level, relaxed: r.relaxed, round: r.round });
+      this.client.send({ t: 'start', level: r.level, relaxed: r.relaxed, round: r.round, decor: this.session.decorPlaced });
       this.sendState();
       this.client.send({ t: 'pause', on: r.paused });
     } else if (r.phase === 'result' && this.session) this.client.send({ t: 'end', s: this.session.sim.state });
+    if (this.shop.get().open) this.sendShop();
+  }
+
+  openShop(open: boolean) { this.shop.update({ open, picks: { ...NO_PICKS }, bought: null }); this.sendShop(); }
+  shopPick(role: ShopRole, id: string) {
+    if (!this.shop.get().open) return;
+    const r = shopPick(loadProgress(), this.shop.get().picks, role, id);
+    if (r.bought) saveProgress(r.save);
+    this.shop.update({ picks: r.picks, bought: r.bought });
+    this.sendShop();
+  }
+  shopPlace(id: string) { saveProgress(togglePlace(loadProgress(), id)); this.shop.update({ bought: null }); this.sendShop(); }
+  sendShop() {
+    const p = loadProgress(), sh = this.shop.get();
+    this.client.send({ t: 'shop', open: sh.open, picks: sh.picks, view: { coins: p.coins, owned: p.decor.owned, placed: p.decor.placed }, bought: sh.bought });
   }
 
   setLobby(p: Partial<Pick<HostRoomState, 'level' | 'relaxed'>>) {
@@ -76,7 +96,7 @@ export class RoomHost {
   /** Mulai (atau ulang) level. */
   start(level: number, relaxed: boolean): HostSession {
     this.offSession?.();
-    const session = new HostSession(level, relaxed, undefined, !!getLevel(level).tutorial && !loadProgress().best[level]);
+    const session = new HostSession(level, relaxed, undefined, !!getLevel(level).tutorial && !loadProgress().best[level], loadProgress().decor.placed);
     this.session = session;
     const local = session.localWaiterLink();
     const off = local.onMessage((m) => {
@@ -132,7 +152,8 @@ export class RoomHost {
 }
 
 /** Status ruangan yang dibaca layar Pelayan. */
-export interface GuestRoomState { phase: Phase | 'waiting'; level: number; relaxed: boolean; round: number; paused: boolean; final: CafeState | null; hostLeft: boolean }
+export interface GuestShop { open: boolean; picks: ShopPicks; view: { coins: number; owned: string[]; placed: Record<string, string> }; bought: string | null }
+export interface GuestRoomState { shop: GuestShop | null; phase: Phase | 'waiting'; level: number; relaxed: boolean; round: number; paused: boolean; final: CafeState | null; hostLeft: boolean; decor: Record<string, string> }
 
 /**
  * Pengendali ruangan di tablet Pelayan. Menerima status ringkas dari host dan
@@ -140,7 +161,7 @@ export interface GuestRoomState { phase: Phase | 'waiting'; level: number; relax
  */
 export class RoomGuest implements WaiterLink {
   readonly client: RoomClient<HostMsg | ServerMsg, WaiterMsg>;
-  readonly room = new Store<GuestRoomState>({ phase: 'waiting', level: 1, relaxed: false, round: 0, paused: false, final: null, hostLeft: false });
+  readonly room = new Store<GuestRoomState>({ shop: null, phase: 'waiting', level: 1, relaxed: false, round: 0, paused: false, final: null, hostLeft: false, decor: {} });
   private snap: CafeState | null = null;
   private snapAt = 0;
   private snapPaused = false;
@@ -167,12 +188,13 @@ export class RoomGuest implements WaiterLink {
         return;
       case 'lobby': this.room.update({ phase: 'lobby', level: m.level, relaxed: m.relaxed, hostLeft: false }); break;
       case 'start':
-        if (m.round !== this.room.get().round || this.room.get().phase !== 'play') { this.snap = null; this.room.update({ phase: 'play', level: m.level, relaxed: m.relaxed, round: m.round, final: null }); }
+        if (m.round !== this.room.get().round || this.room.get().phase !== 'play') { this.snap = null; this.room.update({ phase: 'play', level: m.level, relaxed: m.relaxed, round: m.round, final: null, decor: m.decor ?? {} }); }
         break;
       case 'state': this.snap = m.s; this.snapAt = performance.now(); this.snapPaused = !!m.paused; break;
       case 'pause': this.room.update({ paused: m.on }); break;
       case 'end': this.snap = m.s; this.room.update({ phase: 'result', final: m.s }); break;
       case 'bye': this.room.update({ hostLeft: true }); break;
+      case 'shop': this.room.update({ shop: m.open ? { open: true, picks: m.picks, view: m.view, bought: m.bought } : null }); break;
     }
     this.listeners.forEach((f) => f(m));
   }

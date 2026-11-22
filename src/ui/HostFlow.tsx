@@ -18,6 +18,9 @@ import { SettingsModal } from './SettingsModal';
 import { NetBanner, WaitingOverlay } from './netUi';
 import { useWakeLock } from './wakeLock';
 import { WorldMapScreen } from './WorldMapScreen';
+import { DecorShop } from './DecorShop';
+import { LookPicker } from './LookPicker';
+import { saveStore } from '../game/progress';
 
 /** Alur di HP Koki: buat ruangan -> layar Ruangan & Pilih Peran -> main -> hasil. */
 export function HostFlow({ level, onExit }: { level: number; onExit: () => void }) {
@@ -65,8 +68,21 @@ export function HostFlow({ level, onExit }: { level: number; onExit: () => void 
 
 function HostRoom({ host, onExit }: { host: RoomHost; onExit: () => void }) {
   const room = useStore(host.room);
-  if (room.phase === 'lobby') return <RoomLobby host={host} onExit={onExit} />;
-  return <HostPlay host={host} key={room.round} />;
+  const shop = useStore(host.shop);
+  return (
+    <>
+      {room.phase === 'lobby' ? <RoomLobby host={host} onExit={onExit} /> : <HostPlay host={host} key={room.round} />}
+      {shop.open && <RoomShop host={host} />}
+    </>
+  );
+}
+
+/** Toko Hias Kafe saat main berdua (HP Kakak memilih untuk Koki). */
+function RoomShop({ host }: { host: RoomHost }) {
+  const shop = useStore(host.shop);
+  const p = useStore(saveStore);
+  return <DecorShop view={{ coins: p.coins, owned: p.decor.owned, placed: p.decor.placed }} picks={shop.picks} me="chef" bought={shop.bought}
+    onPick={(role, id) => host.shopPick(role, id)} onPlace={(id) => host.shopPlace(id)} onClose={() => host.openShop(false)} />;
 }
 
 /** Layar Ruangan & Pilih Peran (HP Koki). */
@@ -77,7 +93,8 @@ function RoomLobby({ host, onExit }: { host: RoomHost; onExit: () => void }) {
   const c = getCountry(L.country);
   const peer = net.peer;
   const [map, setMap] = useState(false);
-  if (map) return <WorldMapScreen onBack={() => setMap(false)} onPlay={(lv) => { host.setLobby({ level: lv }); setMap(false); }} />;
+  const [look, setLook] = useState(false);
+  if (map) return <WorldMapScreen onBack={() => setMap(false)} onPlay={(lv) => { host.setLobby({ level: lv }); setMap(false); }} onDecorate={() => { setMap(false); host.openShop(true); }} />;
   return (
     <div class="screen lobby-screen">
       <div class="lobby-top">
@@ -96,6 +113,7 @@ function RoomLobby({ host, onExit }: { host: RoomHost; onExit: () => void }) {
             <Icon name="chefHat" class="role-icon" />
             <b>{t('role.chef')}</b><small>{t('role.kakak')}</small>
             <span class="role-status ok"><Icon name="check" /> {t('room.ready')}</span>
+            <button class="look-btn" onClick={() => setLook(true)}><Icon name="palette" /> {t('look.title')}</button>
           </div>
           <div class={`role-card role-waiter ${peer ? '' : 'dim'}`}>
             <Icon name="tray" class="role-icon" />
@@ -104,7 +122,9 @@ function RoomLobby({ host, onExit }: { host: RoomHost; onExit: () => void }) {
           </div>
         </div>
       </div>
+      {look && <LookPicker role="chef" onClose={() => setLook(false)} />}
       <div class="lobby-bottom">
+        <Btn color="blue" class="lobby-shop" onClick={() => host.openShop(true)}><Icon name="palette" /> {t('result.decorate')}</Btn>
         <div class="relax-box"><Toggle label={t('settings.relaxed')} sub={t('settings.relaxedInfo')} on={room.relaxed} onChange={(v) => { settings.update({ relaxed: v }); host.setLobby({ relaxed: v }); }} /></div>
         <Btn color="yellow" big class={`start-btn ${peer ? 'pulse' : ''}`} disabled={!peer} onClick={() => { audio.unlock(); host.start(room.level, room.relaxed); }}>
           <Icon name="play" /> {t('room.start')}
@@ -164,7 +184,7 @@ function HostPlay({ host }: { host: RoomHost }) {
         <ResultScreen state={session.sim.state}
           onNext={(id) => host.start(id, room.relaxed)}
           onReplay={() => host.start(room.level, room.relaxed)}
-          onHome={() => host.backToLobby()} />
+          onHome={() => host.backToLobby()} onDecorate={() => host.openShop(true)} />
       )}
     </div>
   );

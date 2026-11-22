@@ -2,6 +2,17 @@
 
 Format: versi · tanggal · ringkasan. Nomor versi tampil di Pengaturan.
 
+## 0.5.0 · 2026-11-22 · Tahap 5 — level 6–15, final Indonesia, Hias Kafe
+
+- **Ke-15 level bisa dimainkan.** Level baru: Argentina (empanada, asado), Australia (meat pie, pavlova — dua menu bergantian di oven), Turki (kebab, baklava — lapisan berurutan), Korea (bibimbap, tteokbokki — banyak topping, 4 meja), Arab Saudi (kabsa, mutabbaq), Tiongkok (dimsum, mi tarik — kukusan & tarik mi), Nigeria (nasi jollof, suya), Thailand (pad thai, ketan mangga), India (kari, naan), dan **Indonesia (final: nasi goreng, sate ayam, es teh manis — 3 menu, 5 meja)**.
+- 21 model makanan 3D, ±50 ikon bahan/menu baru, timing "kukus", mini-game lipat & tarik kini dipakai.
+- Tema & hiasan khas 10 negara baru (karpet, pohon palem, lampion warna-warni, lampu untai, poster bulan sabit & batik). Indonesia: suasana warung/angkringan dengan gerobak dan lampu-lampu, musik bernuansa gamelan ceria (suara bonang/saron prosedural).
+- **Perayaan tamat** di Indonesia: "Tamat! Kafe Keliling Dunia Juara!", piala, konfeti ekstra, fanfare.
+- **Hias Kafe**: 14 dekorasi (lantai, hiasan meja, lampu, tanaman, celemek Pelayan, syal Koki) dibeli dengan koin tim — **baru terbeli bila Kakak dan Adik mengetuk barang yang sama** (di satu perangkat: dua tombol per barang; saat main berdua: tiap anak di perangkatnya, pilihan saudara terlihat). Dekorasi tampil di semua level dan ikut terkirim ke tablet Adik. Dibuka dari layar Ruangan, layar Hasil, dan Peta.
+- **Tokohku**: pilih warna kulit, rambut, dan baju tokoh sendiri (layar Ruangan HP Kakak & layar tunggu tablet Adik).
+- Keseimbangan: kesabaran tamu & tempo kedatangan dilonggarkan untuk level 3–15 dan batas bintang disetel ulang (tes otomatis: tim cepat 3★, tim santai ≥2★ di setiap level).
+- Protokol jaringan versi 2 (pesan toko & dekorasi).
+
 ## 0.4.0 · 2026-11-22 · Tahap 4 — Peta Dunia 3D + simpanan
 
 - **Peta Dunia 3D sungguhan** dari data Natural Earth (`world-atlas`), proyeksi Natural Earth 1, dipotong di garis tanggal internasional, tanpa Antartika. Diproses saat build (`tools/build-map.mjs`) menjadi file biner ±355 KB: satu mesh daratan (hijau bervariasi) + satu mesh 15 negara level.

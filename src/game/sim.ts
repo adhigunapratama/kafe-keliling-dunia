@@ -55,7 +55,8 @@ export function buildDiningNav(tables: { x: number; z: number }[], obstacles: [n
 
 /** Penghalang dari hiasan (tanaman) negara. */
 export function decorObstacles(items: { kind: string; x?: number; z?: number; size?: number }[]): [number, number, number][] {
-  return items.filter((d) => d.kind === 'plant' || d.kind === 'cactus' || d.kind === 'bamboo').map((d) => [d.x!, d.z!, 0.45 * (d.size ?? 1)]);
+  return items.filter((d) => d.kind === 'plant' || d.kind === 'cactus' || d.kind === 'bamboo' || d.kind === 'palm' || d.kind === 'cart')
+    .map((d) => [d.x!, d.z!, (d.kind === 'cart' ? 0.75 : 0.45) * (d.size ?? 1)]);
 }
 
 /**

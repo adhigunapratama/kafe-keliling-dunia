@@ -15,6 +15,7 @@ import { moveAt, type NavGrid, type P2 } from '../game/path';
 import { buildDiningNav, chairPos, decorObstacles, tableStand } from '../game/sim';
 import type { CafeState, Guest, Party, Target } from '../game/types';
 import { foodIcon, icon } from '../ui/icons';
+import type { DecorEffects } from '../data/decor';
 
 const GUEST_HEAD_Y = 2.2;
 const TUT_ARROW = '<svg viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg"><path d="M18 4h24v38h14L30 76 4 42h14z" fill="#FFC233" stroke="#2B2340" stroke-width="5" stroke-linejoin="round"/></svg>';
@@ -48,9 +49,10 @@ export class DiningView extends View3D {
   private noopFx = new Map<string, number>();
   readonly drawStats: { before: number; after: number };
 
-  constructor(container: HTMLElement, preset: Preset, country: CountryDef, tables: { color: keyof typeof TABLE_COLORS; x: number; z: number }[], waiterLook: PersonLook) {
+  constructor(container: HTMLElement, preset: Preset, country: CountryDef, tables: { color: keyof typeof TABLE_COLORS; x: number; z: number }[], waiterLook: PersonLook, decor?: DecorEffects) {
     super(container, preset);
-    const b = this.b, th = country.dining;
+    const b = this.b, th = decor?.floor ? { ...country.dining, floor: decor.floor } : country.dining;
+    const decorItems = [...country.decorDining, ...(decor?.dining ?? [])];
     const root = new THREE.Group();
     this.scene.add(root);
     buildRoom(b, root, th);
@@ -78,8 +80,12 @@ export class DiningView extends View3D {
         for (const [a, bb] of [[-0.22, -0.22], [0.22, -0.22], [-0.22, 0.22], [0.22, 0.22]]) b.cyl(0.04, 0.04, 0.45, 0x8b5a3c, a, 0.22, bb, g, {}, 12);
       }
       if (!this.cfg.shadows) this.blobs.addStatic(t.x, t.z, 1.25, 1.0);
+      // hiasan meja dari Hias Kafe
+      if (decor?.tableTop === 'vase') { b.cyl(0.07, 0.05, 0.18, 0xffffff, t.x, 0.87, t.z - 0.25, root); for (const [dx, c] of [[-0.05, 0xff7aa8], [0.04, 0xffc233], [0, 0xe9573f]] as [number, number][]) b.sph(0.05, c, t.x + dx, 1.0, t.z - 0.25 + (dx ? 0.02 : -0.03), root); }
+      else if (decor?.tableTop === 'candle') { b.cyl(0.05, 0.05, 0.16, 0xfff8ee, t.x, 0.86, t.z - 0.25, root); b.sph(0.03, 0xffb000, t.x, 0.97, t.z - 0.25, root, { e: 0xffb000, ei: 1 }); }
+      else if (decor?.tableTop === 'flag') { b.cyl(0.008, 0.008, 0.3, 0x5a3a22, t.x, 0.93, t.z - 0.25, root, {}, 6); b.rbox(0.14, 0.09, 0.01, c.cloth, t.x + 0.07, 1.03, t.z - 0.25, 0.004, root); }
     }
-    buildDecor(b, root, country.decorDining, this.blobs);
+    buildDecor(b, root, decorItems, this.blobs);
     this.drawStats = bakeStatic(root, this.lib);
 
     const vmat = this.lib.get(0xffffff, { vertexColors: true, r: 0.4 });
@@ -103,7 +109,7 @@ export class DiningView extends View3D {
     this.waiter.hold.add(this.carried);
     this.scene.add(this.waiter.group);
 
-    this.nav = buildDiningNav(tables, decorObstacles(country.decorDining));
+    this.nav = buildDiningNav(tables, decorObstacles(decorItems));
     this.bubbles = new AnchorLayer(this.overlay);
 
     this.fitPoints = [new THREE.Vector3(-5.2, 0, -5.2), new THREE.Vector3(5, 0, 5), new THREE.Vector3(-5.2, 3, -5.2), new THREE.Vector3(5.1, 0, -5.2), new THREE.Vector3(-5.2, 0, 5.1), new THREE.Vector3(-5.2, 3, 5), new THREE.Vector3(5, 3, -5.2)];

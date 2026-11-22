@@ -80,6 +80,102 @@ const MAKERS: Record<string, Maker> = {
     b.rbox(0.07, 0.08, 0.01, 0x2e3b2f, 0.06, 0.16, -0.06, 0.004, g);
     const ch = b.cyl(0.008, 0.008, 0.36, 0xb06f2e, 0.08, 0.2, 0.05, g, {}, 6); ch.rotation.z = 1.1;
   },
+  'food/empanada': (b, g) => {
+    for (const x of [-0.08, 0.08]) { const e = b.dome(0.12, Math.PI / 2, 0xe8a85a, x, 0.0, 0, g); e.scale.set(1, 0.7, 0.55); e.rotation.y = x > 0 ? 0.4 : -0.3; }
+  },
+  'food/asado': (b, g) => {
+    b.rbox(0.36, 0.03, 0.24, 0xb07a45, 0, 0.015, 0, 0.012, g);
+    for (const [x, z] of [[-0.08, 0], [0.08, 0.02]] as [number, number][]) { b.rbox(0.13, 0.05, 0.16, 0x8b4a2b, x, 0.055, z, 0.02, g); for (let i = 0; i < 3; i++) b.rbox(0.13, 0.052, 0.012, 0x5a2e18, x, 0.056, z - 0.05 + i * 0.05, 0.004, g); }
+  },
+  'food/meat-pie': (b, g) => {
+    b.cyl(0.15, 0.12, 0.08, 0xc98a45, 0, 0.04, 0, g);
+    const top = b.dome(0.15, Math.PI / 2, 0xe8a85a, 0, 0.08, 0, g); top.scale.set(1, 0.35, 1);
+    b.sph(0.025, 0xe9573f, 0, 0.14, 0, g);
+  },
+  'food/pavlova': (b, g) => {
+    const m = b.dome(0.16, Math.PI / 2, 0xfff8ee, 0, 0, 0, g); m.scale.set(1, 0.6, 1);
+    const c = b.dome(0.12, Math.PI / 2, 0xffffff, 0, 0.09, 0, g); c.scale.set(1, 0.4, 1);
+    b.sph(0.03, 0xe9405a, -0.05, 0.14, 0, g); b.sph(0.03, 0xe9405a, 0.04, 0.14, 0.04, g);
+    b.cyl(0.035, 0.035, 0.015, 0x7cb342, 0.03, 0.14, -0.04, g, {}, 12);
+  },
+  'food/kebab': (b, g) => {
+    const w = b.cap(0.07, 0.22, 0xf3ddb0, 0, 0.07, 0, g); w.rotation.z = Math.PI / 2;
+    b.sph(0.05, 0x6fc25e, 0.1, 0.1, 0, g).scale.set(0.6, 1, 1.2); b.sph(0.045, 0x8b4a2b, 0.12, 0.08, 0, g).scale.set(0.6, 1, 1);
+  },
+  'food/baklava': (b, g) => {
+    for (const [x, z] of [[-0.07, -0.05], [0.07, -0.05], [0, 0.07]] as [number, number][]) { const d = b.rbox(0.11, 0.05, 0.11, 0xe8a85a, x, 0.025, z, 0.015, g); d.rotation.y = Math.PI / 4; b.sph(0.015, 0x7cb342, x, 0.055, z, g); }
+  },
+  'food/bibimbap': (b, g) => {
+    b.cyl(0.19, 0.13, 0.12, 0x5a5370, 0, 0.06, 0, g);
+    b.cyl(0.17, 0.17, 0.02, 0xffffff, 0, 0.115, 0, g);
+    for (const [a, c] of [[0, 0xf28b2b], [1.2, 0x2e7d32], [2.4, 0x8b4a2b], [3.6, 0xe9405a], [4.8, 0xffd45c]] as [number, number][]) b.sph(0.05, c, Math.cos(a) * 0.1, 0.13, Math.sin(a) * 0.1, g).scale.set(1, 0.4, 1);
+    b.sph(0.045, 0xffffff, 0, 0.135, 0, g).scale.set(1, 0.35, 1); b.sph(0.02, 0xffc233, 0, 0.15, 0, g);
+  },
+  'food/tteokbokki': (b, g) => {
+    b.sph(0.15, 0xe9405a, 0, 0.02, 0, g).scale.set(1, 0.2, 1);
+    for (let i = 0; i < 5; i++) { const c = b.cap(0.025, 0.08, 0xfff0e0, Math.cos(i * 1.3) * 0.07, 0.05, Math.sin(i * 1.3) * 0.07, g); c.rotation.set(Math.PI / 2, 0, i); }
+  },
+  'food/kabsa': (b, g) => {
+    b.sph(0.15, 0xe8b04a, 0, 0.03, 0, g).scale.set(1, 0.4, 1);
+    const leg = b.cap(0.04, 0.08, 0xb0602a, 0, 0.1, 0, g); leg.rotation.z = 1.2;
+    b.sph(0.015, 0x7cb342, 0.07, 0.07, 0.05, g);
+  },
+  'food/mutabbaq': (b, g) => {
+    b.rbox(0.24, 0.05, 0.18, 0xe8a85a, 0, 0.025, 0, 0.02, g);
+    b.rbox(0.25, 0.052, 0.01, 0xb06f2e, 0, 0.026, 0, 0.004, g);
+  },
+  'food/dimsum': (b, g) => {
+    b.cyl(0.17, 0.17, 0.08, 0xd9b77a, 0, 0.04, 0, g);
+    for (const [x, z] of [[-0.06, -0.05], [0.06, -0.04], [0, 0.06]] as [number, number][]) { const d = b.dome(0.055, Math.PI / 2, 0xfff8ee, x, 0.08, z, g); d.scale.set(1, 0.9, 1); b.sph(0.012, 0xfff8ee, x, 0.135, z, g); }
+  },
+  'food/mi-tarik': (b, g) => {
+    b.cyl(0.19, 0.13, 0.13, 0xffffff, 0, 0.065, 0, g);
+    b.cyl(0.17, 0.17, 0.02, 0xc9894a, 0, 0.12, 0, g);
+    for (let i = 0; i < 4; i++) b.torus(0.06, 0.008, 0xf4d58d, -0.04 + i * 0.03, 0.13, 0, g).rotation.x = Math.PI / 2;
+    b.rbox(0.06, 0.015, 0.05, 0x7a4326, 0.07, 0.135, 0.04, 0.006, g); b.sph(0.015, 0xe9405a, -0.08, 0.135, 0.05, g);
+  },
+  'food/jollof': (b, g) => {
+    b.sph(0.15, 0xe8742a, 0, 0.03, 0, g).scale.set(1, 0.42, 1);
+    for (const [x, z, c] of [[0.05, 0.04, 0xffc233], [-0.06, 0.02, 0x3f8f3a], [0.01, -0.07, 0xe9405a]] as [number, number, number][]) b.sph(0.018, c, x, 0.08, z, g);
+  },
+  'food/suya': (b, g) => {
+    for (const z of [-0.05, 0.05]) { const st = b.cyl(0.006, 0.006, 0.34, 0xb08a50, 0, 0.04, z, g, {}, 6); st.rotation.z = Math.PI / 2; for (let i = 0; i < 3; i++) b.rbox(0.06, 0.05, 0.05, 0x8b4a2b, -0.08 + i * 0.08, 0.04, z, 0.015, g); }
+  },
+  'food/pad-thai': (b, g) => {
+    b.sph(0.15, 0xe8b04a, 0, 0.025, 0, g).scale.set(1, 0.38, 1);
+    const sh = b.torus(0.03, 0.013, 0xf28b5b, -0.04, 0.08, 0.02, g); sh.rotation.x = Math.PI / 2;
+    const sh2 = b.torus(0.03, 0.013, 0xf28b5b, 0.05, 0.08, -0.02, g); sh2.rotation.x = Math.PI / 2;
+    b.cone(0.03, 0.02, 3, 0x9ccc65, 0.1, 0.06, 0.06, g);
+  },
+  'food/mango-sticky-rice': (b, g) => {
+    b.sph(0.08, 0xffffff, -0.06, 0.03, 0, g).scale.set(1, 0.6, 1);
+    for (let i = 0; i < 3; i++) { const m = b.cap(0.03, 0.1, 0xffc233, 0.07, 0.025 + i * 0.012, -0.04 + i * 0.04, g); m.rotation.set(Math.PI / 2, 0, 0.3); }
+  },
+  'food/kari': (b, g) => {
+    b.cyl(0.18, 0.13, 0.12, 0xffffff, 0, 0.06, 0, g);
+    b.cyl(0.16, 0.16, 0.02, 0xe8a030, 0, 0.11, 0, g);
+    b.sph(0.03, 0xb0602a, -0.05, 0.125, 0.02, g); b.sph(0.03, 0xb0602a, 0.05, 0.125, -0.02, g); b.sph(0.012, 0x3f8f3a, 0, 0.13, 0.06, g);
+  },
+  'food/naan': (b, g) => {
+    const n = b.sph(0.15, 0xf3ddb0, 0, 0.01, 0, g); n.scale.set(1.2, 0.14, 0.85);
+    for (const [x, z] of [[0.05, 0.03], [-0.07, -0.02], [0.02, -0.06]] as [number, number][]) b.sph(0.018, 0xb0702e, x, 0.028, z, g).scale.set(1, 0.3, 1);
+  },
+  'food/nasi-goreng': (b, g) => {
+    b.sph(0.15, 0xc9894a, 0, 0.03, 0, g).scale.set(1, 0.42, 1);
+    const e = b.cyl(0.07, 0.07, 0.012, 0xffffff, 0, 0.09, 0, g); e.scale.set(1, 1, 0.8);
+    b.sph(0.025, 0xffc233, 0, 0.1, 0, g).scale.set(1, 0.5, 1);
+    for (const x of [0.12, 0.15]) { const k = b.rbox(0.07, 0.01, 0.04, 0xf4e3b8, x, 0.04, -0.06, 0.004, g); k.rotation.z = 0.4; }
+  },
+  'food/sate-ayam': (b, g) => {
+    for (const z of [-0.06, 0, 0.06]) { const st = b.cyl(0.005, 0.005, 0.32, 0xb08a50, 0, 0.03, z, g, {}, 6); st.rotation.z = Math.PI / 2; for (let i = 0; i < 3; i++) b.sph(0.03, i % 2 ? 0xb0702e : 0xc9894a, -0.06 + i * 0.05, 0.03, z, g); }
+    b.sph(0.06, 0x8b4a2b, 0.12, 0.015, 0.0, g).scale.set(1, 0.3, 1.4);
+  },
+  'food/es-teh-manis': (b, g) => {
+    b.cyl(0.07, 0.06, 0.24, 0xe6f6ff, 0, 0.12, 0, g, { o: 0.7 });
+    b.cyl(0.062, 0.055, 0.17, 0xc9894a, 0, 0.09, 0, g);
+    b.rbox(0.04, 0.04, 0.04, 0xffffff, 0.02, 0.17, 0.01, 0.01, g);
+    const st = b.cyl(0.008, 0.008, 0.3, 0xe9405a, 0.03, 0.2, 0, g, {}, 8); st.rotation.z = -0.25;
+  },
   /** catatan pesanan (dibawa Pelayan) */
   note: (b, g) => {
     b.rbox(0.22, 0.02, 0.28, 0xffffff, 0, 0.01, 0, 0.01, g);

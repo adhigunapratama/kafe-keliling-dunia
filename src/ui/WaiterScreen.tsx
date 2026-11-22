@@ -8,6 +8,7 @@ import type { WaiterLink, EmojiKind } from '../net/protocol';
 import type { EmojiMsg } from '../game/session';
 import { getLevel } from '../data/levels';
 import { getCountry } from '../data/countries';
+import { decorEffects } from '../data/decor';
 import { tableLayout } from '../data/layouts';
 import { MENUS } from '../data/menus';
 import { TABLE_COLORS } from '../data/palette';
@@ -24,7 +25,7 @@ import { TutorialIcon } from './tutorialUi';
 interface Banner { dishes: { menu: string; table: number }[]; at: number }
 
 /** Layar Pelayan (Adik): cukup ketuk; hampir tanpa tulisan. */
-export function WaiterScreen({ link, level, visible, onPause }: { link: WaiterLink; level: number; visible: boolean; onPause: () => void }) {
+export function WaiterScreen({ link, level, visible, onPause, decor }: { link: WaiterLink; level: number; visible: boolean; onPause: () => void; decor?: Record<string, string> }) {
   const host = useRef<HTMLDivElement>(null);
   const viewRef = useRef<DiningView | null>(null);
   const st = useStore(settings);
@@ -38,7 +39,8 @@ export function WaiterScreen({ link, level, visible, onPause }: { link: WaiterLi
 
   useEffect(() => {
     const el = host.current!;
-    const view = new DiningView(el, effectivePreset(), country, tableLayout(L.tables), st.waiterLook);
+    const fx = decorEffects(decor);
+    const view = new DiningView(el, effectivePreset(), country, tableLayout(L.tables), { ...st.waiterLook, apron: fx.apron ?? st.waiterLook.apron }, fx);
     view.insets = { left: 20, right: 20, top: 64, bottom: 0 };
     view.fit();
     viewRef.current = view;

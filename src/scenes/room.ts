@@ -85,6 +85,12 @@ export function buildDecor(b: Builder, root: THREE.Object3D, items: DecorItem[],
       } else if (d.shape === 'tower') {
         const t = b.cone(0.2, 0.55, 4, d.fg, 0, 0.02, 0.05, g); t.rotation.x = Math.PI / 2; t.rotation.z = Math.PI; t.rotation.set(0, 0, 0); t.scale.set(1, 1, 0.12);
         b.rbox(0.36, 0.04, 0.03, d.fg, 0, -0.12, 0.06, 0.01, g);
+      } else if (d.shape === 'moon') {
+        const m1 = b.cyl(0.22, 0.22, 0.03, d.fg, -0.04, 0, 0.05, g); m1.rotation.x = Math.PI / 2;
+        const m2 = b.cyl(0.18, 0.18, 0.035, d.bg, 0.04, 0, 0.055, g); m2.rotation.x = Math.PI / 2;
+        const st = b.cyl(0.07, 0.07, 0.03, d.fg, 0.24, 0, 0.05, g, {}, 5); st.rotation.x = Math.PI / 2;
+      } else if (d.shape === 'batik') {
+        for (let i = 0; i < 3; i++) for (let j = 0; j < 2; j++) { const k = b.cyl(0.09, 0.09, 0.025, d.fg, -0.28 + i * 0.28, -0.14 + j * 0.28, 0.05, g, {}, 8); k.rotation.x = Math.PI / 2; const k2 = b.cyl(0.04, 0.04, 0.03, 0xfff3dc, -0.28 + i * 0.28, -0.14 + j * 0.28, 0.055, g, {}, 8); k2.rotation.x = Math.PI / 2; }
       } else if (d.shape === 'wave') {
         for (let i = 0; i < 3; i++) { const w = b.torus(0.12, 0.025, d.fg, -0.24 + i * 0.24, -0.05, 0.05, g); w.scale.set(1, 0.7, 0.3); }
       }
@@ -118,6 +124,34 @@ export function buildDecor(b: Builder, root: THREE.Object3D, items: DecorItem[],
       if (d.wall === 'left') { g.position.set(-4.8, 1.05, d.at); g.rotation.y = Math.PI / 2; } else g.position.set(d.at, 1.05, -4.8);
       b.rbox(1.4, 0.2, 0.28, 0x8b5a3c, 0, 0, 0, 0.04, g);
       for (let i = 0; i < 6; i++) { b.sph(0.1, 0x5baf4e, -0.55 + i * 0.22, 0.14, 0, g); b.sph(0.07, d.colors[i % d.colors.length], -0.55 + i * 0.22, 0.24, 0.03, g); }
+    } else if (d.kind === 'stringLights') {
+      const n = 13;
+      for (let i = 0; i < n; i++) {
+        const k = -4.5 + (9 * i) / (n - 1);
+        const sag = 0.22 * Math.sin((Math.PI * i) / (n - 1));
+        const c = d.colors[i % d.colors.length];
+        const p = d.wall === 'left' ? [-4.9, 2.55 - sag, k] : [k, 2.55 - sag, -4.9];
+        b.sph(0.075, c, p[0], p[1], p[2], root, { e: c, ei: 0.9 });
+      }
+      if (d.wall === 'left') b.rbox(0.015, 0.015, 9, 0x2b2340, -4.9, 2.62, 0, 0.006, root); else b.rbox(9, 0.015, 0.015, 0x2b2340, 0, 2.62, -4.9, 0.006, root);
+    } else if (d.kind === 'rug') {
+      const r1 = b.rbox(d.w, 0.02, d.d, d.border, d.x, 0.01, d.z, 0.008, root); r1.castShadow = false;
+      const r2 = b.rbox(d.w - 0.3, 0.025, d.d - 0.3, d.color, d.x, 0.012, d.z, 0.008, root); r2.castShadow = false;
+    } else if (d.kind === 'palm') {
+      b.cyl(0.26, 0.2, 0.36, 0xd98c5f, d.x, 0.18, d.z, root);
+      const tr = b.cyl(0.05, 0.07, 1.3, 0x8b5a3c, d.x, 1.0, d.z, root, {}, 10); tr.rotation.z = 0.08;
+      for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2; const l = b.cap(0.06, 0.55, 0x3f8f3a, d.x + Math.cos(a) * 0.3, 1.62, d.z + Math.sin(a) * 0.3, root); l.rotation.set(Math.sin(a) * 1.1, 0, -Math.cos(a) * 1.1); }
+      blobs?.addStatic(d.x, d.z, 0.45);
+    } else if (d.kind === 'cart') {
+      const g = new THREE.Group(); g.position.set(d.x, 0, d.z); g.rotation.y = Math.PI / 4; root.add(g);
+      b.rbox(1.2, 0.5, 0.7, 0x8b5a3c, 0, 0.6, 0, 0.05, g);
+      b.rbox(1.25, 0.06, 0.75, 0xf3d9a6, 0, 0.88, 0, 0.03, g);
+      for (const x of [-0.45, 0.45]) { b.cyl(0.03, 0.03, 1.1, 0x5a3a22, x, 1.4, -0.3, g, {}, 8); b.cyl(0.03, 0.03, 1.1, 0x5a3a22, x, 1.4, 0.3, g, {}, 8); }
+      b.rbox(1.4, 0.06, 0.95, 0xe2231a, 0, 1.95, 0, 0.03, g);
+      for (const x of [-0.4, 0.4]) { const w = b.cyl(0.22, 0.22, 0.06, 0x2b2340, x, 0.24, 0.38, g, {}, 18); w.rotation.x = Math.PI / 2; }
+      for (let i = 0; i < 3; i++) b.cyl(0.07, 0.07, 0.14, [0xffc233, 0x5bd06f, 0xe2231a][i], -0.35 + i * 0.35, 0.98, 0, g, {}, 12);
+      b.sph(0.07, 0xffc233, 0, 1.82, 0, g, { e: 0xffc233, ei: 0.9 });
+      blobs?.addStatic(d.x, d.z, 0.8);
     } else if (d.kind === 'lamp') {
       // lampu dinding (tidak menghalangi pandangan dari atas)
       const onLeft = d.x < d.z;

@@ -11,6 +11,7 @@ import { makeModel } from '../models/registry';
 import { MENUS } from '../data/menus';
 import { NavGrid, moveAt, moveEnd, type Move, type P2 } from '../game/path';
 import type { CafeState } from '../game/types';
+import type { DecorEffects } from '../data/decor';
 
 export interface StationPlacement { id: StationId; x: number; z: number; stand: P2; slot?: KitchenSlot }
 
@@ -56,7 +57,7 @@ export class KitchenView extends View3D {
   private time = 0;
   readonly drawStats: { before: number; after: number };
 
-  constructor(container: HTMLElement, preset: Preset, country: CountryDef, cookStations: CookStationId[], chefLook: PersonLook) {
+  constructor(container: HTMLElement, preset: Preset, country: CountryDef, cookStations: CookStationId[], chefLook: PersonLook, decor?: DecorEffects) {
     super(container, preset);
     const b = this.b, k = country.kitchen;
     const root = new THREE.Group();
@@ -102,7 +103,7 @@ export class KitchenView extends View3D {
     this.scene.add(this.bell);
 
     for (const st of this.stations) this.buildStation(root, st);
-    buildDecor(b, root, country.decorKitchen, this.blobs);
+    buildDecor(b, root, [...country.decorKitchen, ...(decor?.kitchen ?? [])], this.blobs);
     if (!this.cfg.shadows) {
       // pengganti shadow map di preset Rendah
       this.blobs.addStatic(-4.25, aZ, 0.9, aLen / 2 + 0.2);

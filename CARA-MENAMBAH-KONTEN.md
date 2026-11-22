@@ -92,7 +92,20 @@ dan `en.ts` (TypeScript dan tes akan menolak bila ada yang kurang).
 
 ## Dekorasi (Hias Kafe)
 
-*Menyusul di Tahap 5* (`src/data/decor.ts`).
+Tambahkan entri di `DECOR` (`src/data/decor.ts`):
+
+```ts
+{ id: 'lantai-bintang', slot: 'lantai', price: 80, color: 0x5b9bf0, floor: { kind: 'checker', a: '#ffffff', b: '#5b9bf0' } },
+```
+
+- `slot`: `lantai`, `meja`, `lampu`, `tanaman`, `celemek` (Pelayan), `syal` (Koki). Satu barang per slot dipasang.
+- Efek: `floor` (lantai ruang makan), `dining` / `kitchen` (hiasan tambahan, jenis sama dengan hiasan negara),
+  `tableTop` (`vase` / `candle` / `flag` di setiap meja), `apron`, `scarf` (warna).
+- Teks `decor.<id>` di kedua file i18n. Ikon toko digambar otomatis dari `slot` + `color`.
+- Tes otomatis memastikan semua kursi tetap terjangkau dengan semua dekorasi terpasang.
+
+Aturan beli ada di `src/game/shop.ts`: barang terbeli hanya bila kedua anak memilih barang yang sama
+dan koin tim cukup.
 
 ## Tutorial
 

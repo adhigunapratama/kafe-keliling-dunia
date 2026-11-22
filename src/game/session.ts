@@ -3,6 +3,7 @@ import type { SimEvent, Target } from './types';
 import type { EmojiKind, HostMsg, Role, WaiterLink, WaiterMsg } from '../net/protocol';
 import { getLevel } from '../data/levels';
 import { getCountry } from '../data/countries';
+import { decorEffects } from '../data/decor';
 
 export interface EmojiMsg { from: Role; kind: EmojiKind; at: number }
 
@@ -17,10 +18,10 @@ export class HostSession {
   private emojiL = new Set<(m: EmojiMsg) => void>();
   private waiterL = new Set<(m: HostMsg) => void>();
 
-  constructor(level: number, relaxed: boolean, seed?: number, tutorial = false) {
+  constructor(level: number, relaxed: boolean, seed?: number, tutorial = false, readonly decorPlaced: Record<string, string> = {}) {
     const L = getLevel(level);
     const country = getCountry(L.country);
-    this.sim = new CafeSim({ level, relaxed, seed, tutorial, obstacles: decorObstacles(country.decorDining) });
+    this.sim = new CafeSim({ level, relaxed, seed, tutorial, obstacles: decorObstacles([...country.decorDining, ...decorEffects(decorPlaced).dining]) });
     this.sim.on((e) => {
       this.evL.forEach((f) => f(e));
       this.waiterL.forEach((f) => f({ t: 'event', e }));

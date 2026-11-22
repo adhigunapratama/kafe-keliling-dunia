@@ -8,6 +8,7 @@ import type { Ticket } from '../game/types';
 import { RECIPES, stationsForMenus } from '../data/recipes';
 import type { StationId } from '../data/stations';
 import { getCountry } from '../data/countries';
+import { decorEffects } from '../data/decor';
 import { MENUS } from '../data/menus';
 import { TABLE_COLORS } from '../data/palette';
 import { t } from '../data/i18n';
@@ -39,7 +40,8 @@ export function ChefScreen({ session, visible, onPause }: { session: HostSession
   // adegan 3D
   useEffect(() => {
     const el = host.current!;
-    const view = new KitchenView(el, effectivePreset(), country, stationsForMenus(L.menus), st.chefLook);
+    const fx = decorEffects(session.decorPlaced);
+    const view = new KitchenView(el, effectivePreset(), country, stationsForMenus(L.menus), { ...st.chefLook, scarf: fx.scarf ?? st.chefLook.scarf }, fx);
     view.insets = { left: 160, right: 10, top: 60, bottom: 0 };
     view.fit();
     viewRef.current = view;
